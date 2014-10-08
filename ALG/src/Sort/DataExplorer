@@ -1,0 +1,4044 @@
+package com.citi.muni.rms.report;
+
+import java.io.FileReader;
+import java.io.LineNumberReader;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.Driver;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+
+import org.apache.log4j.Logger;
+
+import com.citi.muni.msdc.enums.ProductType;
+import com.citi.muni.msdc.enums.XRefCode;
+import com.citi.muni.msdc.utils.SpringUtil;
+import com.citi.muni.rms.common.messaging.Client;
+import com.citi.muni.rms.common.util.CommandLineParser;
+import com.citi.muni.rms.common.util.DateUtil;
+import com.citi.muni.rms.database.DAO;
+import com.citi.muni.rms.database.DsLibDAO;
+import com.citi.muni.rms.database.RunDAO;
+import com.citi.muni.rms.database.TradeDAO;
+import com.citi.muni.rms.database.vo.GenericVO;
+import com.citi.muni.rms.database.vo.Run;
+import com.citi.muni.rms.database.vo.SecurityPosition;
+import com.citi.muni.rms.database.vo.TransactionHeaderVO;
+import com.citi.muni.rms.database.vo.TransactionHeaderVO.MuniBond;
+
+
+
+public class DataExplorer
+{  public DataExplorer(CommandLineParser cp) throws Throwable
+   {  this(cp, DAO.getRun(cp));
+   }
+
+   public DataExplorer(CommandLineParser cp, GenericVO aRun) throws Throwable
+   {  try
+      {  cmdParser = cp;
+         run = aRun;
+
+         String s = cmdParser.getParam("useStaticCache");
+
+         if (s!=null&&!"".equals(s.trim())) 
+         {  useMomentoes = Boolean.valueOf(s.trim());
+         }
+      
+         cacheIdSuffix = cmdParser.getParam("cacheIdSuffix");
+
+         initFilters();      
+
+         synchronized(lock)
+         {  if (client == null)
+               client = new Client();
+         }
+
+         String runId = run.getString("run_id");
+         //fileName=getDataDir()+ "/rpt/.DataExplorer/" + runId;
+
+         	Map<String, Object> msg = new HashMap<String, Object>();
+            msg.put("Request", "CreateFileCache");
+            msg.put("RunId", runId);
+           
+            if (cp.hasFlag("ignoreRunStatus"))
+            {  msg.put("IgnoreRunStatus", "true");
+            }
+         
+            Map<String, Object> msgReq = msg;
+            if (cmdParser.getParam("cacheFile") == null) {
+                msg = client.requestWait("RMSDataExplorer", msg);
+            }
+            else {
+            	msg.put("Ready", cmdParser.getParam("cacheFile"));
+            }
+
+            if (msg.get("Init Cache") != null)
+            {
+            	try {
+            		do {
+                		Thread.sleep(60000);
+                        msg = client.requestWait("RMSDataExplorer", msgReq);
+            		} while (msg.get("Init Cache") != null || msg.get("Building Cache") != null);
+            	}
+            	catch (Throwable t) {
+            		throw new RuntimeException("Building Cache: " + msg.get("Building Cache").toString(), t);
+            	}
+            }
+
+            if (msg.get("Not Found") != null)
+            {  throw new RuntimeException("Run not found: " + msg.get("Not Found").toString());
+            }
+            else if (msg.get("Not Ready") != null)
+            {  throw new RuntimeException("Run not ready: " + msg.get("Not Ready").toString());
+            }
+            else if (msg.get("Building Cache") != null)
+            {  throw new RuntimeException("Building Cache: " + msg.get("Building Cache").toString());
+            }
+            else if (msg.get("Error") != null)
+            {  Object error = msg.get("Error");
+
+               if (error == null)
+                  error = "Unknown";
+
+               throw new RuntimeException("Error: " + error);
+            }
+            else if (msg.get("Ready") == null) {
+            	throw new RuntimeException("Unknown response from DE server: " + msg.keySet());
+            }
+
+           fileName = msg.get("Ready").toString();
+         
+
+         getLogger().info("ready to get file "+fileName);
+         
+         if (cmdParser.hasFlag("debug"))
+         {  System.out.println("FILE: " + fileName + ".txt");
+         }
+  
+         String aDate = cmdParser.getParam("dealDt");
+
+         initDBConnections();
+      /*   String ddt = run.getString("deal_dt");
+
+         if (ddt.length() == 8)
+            ddt = ddt.substring(0,4) + "-" + ddt.substring(4,6) + "-" + ddt.substring(6,8) + ":20:00:00";
+         else
+            ddt = ddt.substring(0,4) + "-" + ddt.substring(4,6) + "-" + ddt.substring(6,8) + ":" +
+               ddt.substring(8,10) + ":" + ddt.substring(10,12) + ":00";
+
+         ddt = "to_date('" + ddt + "','YYYY-MM-DD:HH24:MI:SS')";
+    */
+
+         String asrtTimeSql = getTimeSql(DateUtil.formatYYYYMMddHHmm(new Timestamp(System.currentTimeMillis())));
+         
+         String adt = cmdParser.getParam("asOfDt");
+         
+         if (adt == null)
+         {  //adt = run.getString("run_start_dt");
+           // adt = adt.substring(0,10) + ":" + adt.substring(11,19);
+        	 adt=asrtTimeSql;
+         }
+
+       //  adt = "to_date('" + adt + "','YYYY-MM-DD:HH24:MI:SS')";
+         
+         loadRunGroupSettings();
+
+         String strategyTemporalClause = getTemporalClauseFromSqls("strategy",getTimeSql(run.getString("deal_dt")),asrtTimeSql); 
+         ResultSet rs = stOracle.executeQuery(
+            "select distinct book, account, name " +
+            "from RiskApp.strategy " +
+            "where " + strategyTemporalClause);
+
+         while (rs.next())
+         {  accountBookMap.put( rs.getString(2).trim(), rs.getString(1).trim());
+            legalEntityAccountMap.put(rs.getString(2).trim(), rs.getString(3).trim());
+         }
+         
+         if (aDate == null)
+         {  if ("N".equals(run.getString("eod")))
+            {  aDate = run.getString("deal_prev_dt");
+            }
+            else
+            {  aDate = run.getString("deal_dt").substring(0,8);
+            }
+         }
+
+         if (accountBookMap.size() == 0)
+         {  rs = stOracle.executeQuery("select distinct book, account, name " +
+               "from RiskApp.strategy " +
+               "where " + strategyTemporalClause);
+
+            while (rs.next())
+            {  accountBookMap.put( rs.getString(2).trim(), rs.getString(1).trim());
+               legalEntityAccountMap.put(rs.getString(2).trim(), rs.getString(3).trim());
+            }
+         }  
+
+         String fundingSql="select cpartymnemonic,funding,source\n" +
+            "from riskapp.cparty_funding\n" +
+    	         "where "+getTemporalClauseFromSqls("cparty_funding",getTimeSql(run.getString("deal_dt")),asrtTimeSql)+"\n"+
+    	        "and source in ('override', 'ark') \n";
+        
+
+         rs = stOracle.executeQuery(fundingSql);
+    
+        while (rs.next())
+        {  String cparty = rs.getString(1).trim();
+           String funding = rs.getString(2).trim();
+           String source = rs.getString(3).trim();
+
+            if ("override".equals(source))
+            {  fundingSourceMap.put(cparty, source);
+               cpartyFundingMap.put(cparty, funding);
+            }
+            else
+            {  String sm = fundingSourceMap.get(cparty);
+
+               if ("override".equals(sm))
+               {  continue;
+               }
+
+               fundingSourceMap.put(cparty, source);
+               cpartyFundingMap.put(cparty, funding);
+            }
+         }
+         
+         if (cmdParser.hasFlag("c") == false)
+            initLegLookup(asrtTimeSql,runId);
+      
+         initCols();
+
+         initComplexTrades();
+
+         calcConfigMap = new HashMap<Integer, String>();
+
+         rs = stOracle.executeQuery(
+            "select cc.id, cc.display_name from RiskApp.calc_config cc");
+
+         while (rs.next())
+         {  calcConfigMap.put(rs.getInt(1), rs.getString(2).trim());
+         }
+         rs.close();
+
+         eSummaryColNames = expandColNames(cmdParser.getParam("s"));
+
+         if (tradeActivity != null)
+         {  legActivity = new HashMap<String, ArrayList<ArrayList<String>>>();
+
+            String sql = 
+               "select position_id, path, new_value, old_value\n" +
+               "from riskapp.trade_activity\n" +
+               "where run_id = '" + run.getString("run_id") + "'";
+
+            if (cmdParser.hasFlag("debug"))
+               System.out.println(sql);
+
+            rs = stOracle.executeQuery(sql);
+
+            while (rs.next())
+            {  String ids[] = rs.getString(1).split("[.]");
+               String posId = ids[0] + "." + ids[1];
+
+               ArrayList<String> row = new ArrayList<String>();
+
+               String str = rs.getString(2);
+
+               if (str == null) 
+                  str = "";
+
+               row.add(str);
+
+               str = rs.getString(3);
+
+               if (str == null) 
+                  str = "";
+
+               row.add(str);
+
+               str = rs.getString(4);
+
+               if (str == null) 
+                  str = "";
+
+               row.add(str);
+
+               HashMap<String, ArrayList<ArrayList<String>>> activityLookup;
+
+               if (ids.length == 2)              
+               {  activityLookup = tradeActivity;
+
+                  if (row.get(0).length() == 0)
+                  {  if ("*".equals(row.get(1)))
+                       tradeActivityStatus.put(posId, "New");
+                     else if ("*".equals(row.get(2)))
+                        tradeActivityStatus.put(posId, "Old");
+                     else
+                        tradeActivityStatus.put(posId, "Mod");
+                  }   
+               }
+               else
+               {  activityLookup = legActivity;
+                  tradeActivityStatus.put(posId, "Mod");
+                  posId += "." + ids[2];
+               }
+
+               ArrayList<ArrayList<String>> detailRows = activityLookup.get(posId);
+
+               if (detailRows == null)
+               {  detailRows = new ArrayList<ArrayList<String>>();
+                  activityLookup.put(posId, detailRows);
+               }
+
+               detailRows.add(row);
+            }
+         }
+
+         String str = cmdParser.getParam("absSort");
+
+         if (str != null)
+         {  String x[] = str.split(",");
+
+            sortOrder = new int[x.length];
+
+            int max = eSummaryColNames.length;
+
+            for (int i=0; i < x.length; i++)
+            {  sortOrder[i] = Integer.parseInt(x[i]);
+            
+               if (sortOrder[i] < 1)
+                  throw new RuntimeException("Bad sort order: " + sortOrder[i] + ", min=1");
+               else if (sortOrder[i] > max)
+                  throw new RuntimeException("Bad sort order: " + sortOrder[i] + ", max=" + max);
+
+               sortOrder[i]--;
+            }
+         }
+
+         colAliases.put("Mark", "q2.MARK");
+         colAliases.put("Mark(PTrd)", "q2.PTRD.MARK");
+         colAliases.put("LiborDelta", "q2.SODDelta/ParallelLiborDelta");
+         colAliases.put("LiborDelta(PTrd)", "q2.PTRD.SODDelta/ParallelLiborDelta");
+         colAliases.put("USD1M3MDelta", "q2.YCRisk/ParallelUSD1M3Mrisk");
+         colAliases.put("USD6M3MDelta", "q2.YCRisk/ParallelUSD6M3Mrisk");
+         colAliases.put("BMADelta", "q2.SODBMADelta/ParallelBMADelta");
+         colAliases.put("FedFundDelta", "q2.FedFundRisk/ParallelFedFundRisk");
+         colAliases.put("AtmVega_CP", "q2.ATMVega/ParallelAtmVega_CP");
+         colAliases.put("AtmVega_SW", "q2.ATMVega/ParallelAtmVega_SW");
+         colAliases.put("NormVega_CP", "q2.ParameterSens/ParallelNormVega_CP");
+         colAliases.put("NormVega_SW", "q2.ParameterSens/ParallelNormVega_SW");
+         colAliases.put("MRRisk", "q2.MinorMktRisk/ParallellMRRisk");
+         colAliases.put("URRisk", "q2.MinorMktRisk/ParallellURRisk");
+         colAliases.put("GRRisk", "q2.MinorMktRisk/ParallellGRRisk");
+         colAliases.put("TBillRisk", "q2.MinorMktRisk/ParallellTBILLRisk");
+         colAliases.put("ADRisk", "q2.MinorMktRisk/ParallellADRisk");
+         colAliases.put("CPRisk", "q2.MinorMktRisk/ParallellCPRisk");
+         colAliases.put("EoniaRisk", "q2.YCRisk/ParallelEoniarisk");
+         colAliases.put("Eur_Usd_Xccy", "q2.YCRisk/ParallelEUR_USD_XCCY_risk");
+         colAliases.put("MMDRisk", "q2.MMDRisk/ParallelMMDRisk");
+         colAliases.put("EurLibor", "q2.YCRisk/ParallelEURLiborRisk");
+         
+         if (cmdParser.hasFlag("c") == false)
+         {  Thread t = new Thread(new Runnable()
+            {  public void run()
+               {  try
+                  {  summarize();
+                  }
+                  catch(Throwable e)
+                  {  getLogger().error(e,e);
+                     error = e;
+                  }
+                  finally
+                  {  synchronized(lock)
+                     {  lock.notify();
+                     }
+                  }
+               }
+            });
+
+            t.start();
+         }
+      }
+      catch(Throwable e)
+      {  releaseDBObjects();
+         throw e;
+      }
+   }
+   
+   private Row getMbondRow(String id1, String id2, String legNo, String lookupKey) {
+       Row row = null;
+       if (("".equals(id1)||"".equals(id2))&&"0".equals(legNo)) {
+    	   String cusip = ("".equals(id1)?id2:id1);
+           Set<String> keys = mbondCusipAccountMap.get(cusip);
+           if (keys!=null&&keys.size()>0) {
+               for (String key:keys) {
+                   String cusipAccount = id1+"@"+key+"@"+legNo;
+                   row = legLookup.get(cusipAccount);
+                   if (row!=null) {
+                       break;
+                   }
+               }
+           }
+       }
+       return row;
+   }
+   
+   private Row getTRSRow(String id1, String id2, String legNo, String lookupKey) {
+       Row row = null;
+       if (("".equals(id1)||"".equals(id2))&&"0".equals(legNo)) {
+    	   String cusip = ("".equals(id1)?id2:id1);
+           Set<String> keys = trsCusipOasysIdMap.get(cusip);
+           if (keys!=null&&keys.size()>0) {
+               for (String key:keys) {
+                   String cusipOasysIds = id1+"@"+key+"@"+legNo;
+                   row = legLookup.get(cusipOasysIds);
+                   if (row!=null) {
+                       break;
+                   }
+               }
+           }
+       }
+       return row;
+   }
+   
+   private void loadRunGroupSettings() throws SQLException {
+	   
+       // run group configs, including precision override
+       int precision = 2;
+       String precisionParam = cmdParser.getParam("precision");
+       ResultSet rs = stOracle.executeQuery(
+      		 "select value_type, value_id from RiskApp.group_config where group_type = 'runGroup' and group_id = '" + run.getString("run_grp_id").trim() + "'");
+       while (rs.next()) {
+      	 String vt = rs.getString(1).trim();
+      	 if (vt.equalsIgnoreCase("precision") && (precisionParam == null || precisionParam.trim().length() == 0))
+      		 precisionParam = rs.getString(2);
+      	 else if (vt.equalsIgnoreCase("bondIndexDE"))
+      		 bondIndexDE = Boolean.valueOf(rs.getString(2));
+      	 else if (vt.equalsIgnoreCase("useDsLibEntity"))
+      		 useDsLibEntity = Boolean.valueOf(rs.getString(2));
+       }
+       rs.close();
+       if (bondIndexDE) {
+      	 useMomentoes = false;
+       }
+       if (useDsLibEntity && cacheIdSuffix == null) {
+    	 cacheIdSuffix = ".MSDC";
+       }
+       if (precisionParam != null && precisionParam.trim().length() > 0)
+       {
+      	precision = Integer.valueOf(precisionParam.trim());
+       }
+     	 doubleFormat = "%." + precision + "f";
+     	 doubleSepFormat = "%,." + precision + "f";
+   }
+
+   public Row nextWarnOrError() throws Throwable
+   {  try
+      {  if (issuesRS == null)
+         {    	 
+    	    String allRunPks = initAllRunPks(run, stOracle);
+
+            issuesRS = stOracle.executeQuery(
+               "select (case when (p.unique_id1 is not null and (e.leg_number is not null and e.leg_number !=-1)) then concat(p.unique_id1,concat('.',concat(p.unique_id2,concat('.',e.leg_number)))) \n" +
+               "when p.unique_id1 is not null then concat(p.unique_id1,concat('.',p.unique_id2))\n" +
+               "when p.index_msd_securityid is not null then concat(p.index_msd_securityid,'-0')\n" +
+               "when p.msd_securityid is not null then xr.xrefValue\n" +
+               //"when p.cusip is null and p.index_msd_securityid is null then 'dummy-dummy' \n" +
+               "else concat(p.cusip,concat('-',p.account)) end) as position_id,\n" + 
+               "component, severity, calc_id, value_group_id, shortmsg, longmsg\n" +
+               "from RiskApp.trade_exception e\n" +
+               "left outer join riskapp.position_id p on (e.position_pk=p.position_pk)\n" +
+               "join (select run_id,to_timestamp((case when length(deal_dt)=8 then concat(deal_dt,'2359') else deal_dt end),'YYYYMMDDHH24MI') as effStartTm from riskapp.run) run2 on (run2.run_id='"+run.getString("run_id")+"')\n" +
+               "left outer join securityIndic.security_xref xr on (xr.xref_code_id=1 and xr.msd_security_id=p.msd_securityId\n" +
+               "and xr.eff_from_dt <= run2.effStartTm and run2.effStartTm < xr.eff_to_dt\n"+
+               "and xr.asrt_from_dt <= systimestamp and systimestamp < xr.asrt_to_dt)\n"+
+               "where run_pk in (" + allRunPks + ")");
+
+            while (issuesRS.next())
+            {  String id[] = { "0", "0", "0" };
+
+               String posId = issuesRS.getString(1);
+
+               if (posId != null)
+               {  id = posId.split("\\.");
+               }
+
+               String id1, id2, legNo;
+
+               if (id.length == 3)
+               {  try {
+                   id1 = id[0];
+                  id2 = id[1];
+                  legNo = id[2];
+               } catch (Throwable t) {
+                   getLogger().error("posId: " + posId, t);
+                   throw t;
+               }
+               }
+               else if (id.length == 2)
+               {  id1 = id[0];
+                  id2 = id[1];
+                  legNo = "0";
+               }
+               else
+               {  id = posId.split("-");
+
+                   if (id.length == 1)
+                   {  id1 = posId;
+                      id2 = "";
+                      legNo = "0";
+                   }
+                  else
+                  {  id1 = id[0];
+                     id2 = id[1];
+                     legNo = "0";
+                  }
+               }
+               
+               if (bondIndexDE) {
+            	   Row row = new Row();
+                   row.add("Severity");
+                   row.add("Component");
+                   row.add("Issue");
+                   row.add("Description");
+
+                   firstTime = true;
+                   return(row);
+               }
+
+               String key3 = id1 + "@" + id2 + "@" + legNo;
+          
+               Row row = legLookup.get(key3);
+               if (row==null) {
+                   row = getMbondRow(id1,id2,legNo,key3);
+                   if(row==null){
+                	   row=getTRSRow(id1,id2,legNo,key3);
+                   }
+                	   
+               }
+
+               if (row == null)
+                  continue;
+               else if (skip(row))
+                  continue;
+
+               row = new Row();
+               row.add("Severity");
+               row.add("Id1/Cusip");
+               row.add("Id2/Account");
+               row.add("LegNo");
+               row.add("Book");
+               row.add("Component");
+               row.add("ColName");
+               row.add("Issue");
+
+               firstTime = true;
+               return(row);
+            }
+         }
+
+         while (firstTime || issuesRS.next())
+         {  
+        	 
+        	 
+        	 firstTime = false;
+            String posId = issuesRS.getString(1);
+ 
+            String id[] = { "0", "0", "0" };
+
+            if (posId != null)
+            {  id = posId.split("\\.");
+            }
+
+            String id1, id2, legNo;
+
+            if (id.length == 3)
+            {  id1 = id[0];
+               id2 = id[1];
+               legNo = id[2];
+            }
+            else if (id.length == 2)
+            {  id1 = id[0];
+               id2 = id[1];
+               legNo = "0";
+            }
+            else
+            {  id = posId.split("-");
+
+               if (id.length == 1)
+               {  id1 = posId;
+                  id2 = "";
+                  legNo = "0";
+               }
+               else
+               {  id1 = id[0];
+                  id2 = id[1];
+                  legNo = "0";
+               }
+            }
+            
+            if (bondIndexDE) {
+                String component = issuesRS.getString(2);
+                String severity = issuesRS.getString(3);
+                Row row = new Row();
+                row.add(severity);
+                row.add(component);
+                row.add(issuesRS.getString(6));
+                row.add(issuesRS.getString(7));
+                return(row);
+           }
+
+            String key3 = id1 + "@" + id2 + "@" + legNo;
+
+            Row row = legLookup.get(key3);
+            if (row==null) {
+                row = getMbondRow(id1,id2,legNo,key3);
+                if(row==null){
+             	   row=getTRSRow(id1,id2,legNo,key3);
+                }
+            }
+
+            if (row == null){         	
+         
+               continue;
+               }
+            else if (skip(row)){
+            	            	
+               continue;
+               }
+
+            String book = row.getString(4, "");
+         
+            String component = issuesRS.getString(2);
+            String severity = issuesRS.getString(3);
+            Integer calcId = issuesRS.getInt(4);
+
+            String colName = calcConfigMap.get(calcId);
+
+            int valueGroupId = issuesRS.getInt(5);
+
+            if (valueGroupId != 0)
+            {  colName = colName + "/" + valueGroupId;
+            }
+
+            row = new Row();
+            row.add(severity);
+            row.add(id1);
+            row.add(id2);
+            row.add(legNo);
+            row.add(book);
+            row.add(component);
+            row.add(colName);
+            row.add(issuesRS.getString(6));
+
+            return(row);
+         }
+      }
+      catch(Throwable e)
+      {  releaseDBObjects();
+         throw e;
+      }
+
+      releaseDBObjects();
+
+      return(null);
+   }
+
+   int sortOrder[] = null;
+   ArrayList<Row> sortedRows = null;
+   Iterator<Row> sortedRowsIterator = null;
+
+   Row ret = null;
+
+   public Row nextRow() throws java.lang.InterruptedException
+   {  releaseDBObjects();
+
+      if (sortOrder == null)
+      {  return(nextRowImpl());
+      }
+      else
+      {  if (sortedRowsIterator == null)
+         {  sortedRows = new ArrayList<Row>();
+
+            while(true)
+            {  Row row = nextRowImpl();
+
+               if (row == null)
+                  break;
+
+               sortedRows.add(row);
+            }
+
+            Collections.sort(sortedRows, new Comparator<Row>()
+            {  public int compare(Row r1, Row r2)
+               {  for (int i=0; i < r1.size(); i++)
+                  {  if (i >= sortOrder.length)
+                        return(0);                            
+
+                     int pos = sortOrder[i];
+
+                     Object cell = r1.get(pos);
+
+                     if (cell == null)
+                        return(-1);
+                     else if (cell.getClass() == Double.class)
+                     {  Double d1 = r1.getDouble(pos, null);
+
+                        if (d1 < 0D)
+                        {  d1 *= -1D;
+                        }
+
+                        Double d2 = r2.getDouble(pos, 0D);
+
+                        if (d2 < 0D)
+                           d2 *= -1D;
+
+                        if (d1 < d2)
+                           return(1);
+                        else if (d1 > d2)
+                           return(-1);
+                     }
+                     else
+                     {  return(cell.toString().compareTo(r2.getString(pos, "")));
+                     }
+                  }
+                  return(0);
+               }
+            });
+
+            sortedRowsIterator = sortedRows.iterator();
+         }
+
+         if (sortedRowsIterator.hasNext())
+         {  return(sortedRowsIterator.next());
+         }
+
+         return(null);
+      }
+   }
+
+   Row nextRowImpl() throws java.lang.InterruptedException
+   {  synchronized(lock)
+      {  while ((error == null)&&(!startedSummaryThread) )
+         {  lock.wait();
+         }
+
+         do
+         {  if ((!allDone) && (error == null) && (sums.size()== 0) )
+            {  lock.wait();
+            }
+
+            if (error != null)
+            {  throw new RuntimeException(new StringBuilder().append("summarize failed: ").append(
+                  error.toString() ).toString() );
+            }
+
+            if (sums.size()> 0)
+            {  ret = composeRow();
+               consumed = true;
+               lock.notify();
+               return(ret);
+            }
+         }
+         while (allDone != true);
+
+         if (ret == null)
+         {  throw new RuntimeException("No rows found that match given criteria");
+         }
+
+         return null;
+      }           
+   } 
+   
+   boolean closedDBConns = false;
+
+   private void releaseDBObjects() 
+   {  if (closedDBConns == false)
+      {
+	   
+	   closedDBConns = true;
+         try 
+         {  if (stOracle!=null) 
+            {  stOracle.close();
+            }
+         } 
+         catch (Throwable t) 
+         {  getLogger().info("Could not close stOracle",t);
+         }
+         try 
+         {  if (conn!=null && !conn.isClosed()) 
+            {  conn.close();
+            }
+         } 
+         catch (Throwable t) 
+         {  getLogger().info("Could not close oracleConn",t);
+         }
+      }
+   }
+
+   public class Row extends ArrayList<Object>
+   {  public String getString(int order, String def)
+      {  Object obj = get(order);
+         if (obj == null)
+            return(def);
+         return(obj.toString());
+      }
+
+      public Float getFloat(int order, Float def)
+      {  Object obj = get(order);
+         if (obj == null)
+            return(def);
+         return(Float.class.isAssignableFrom(obj.getClass())?(Float) obj:new Float(""+obj));
+      }
+
+      public Double getDouble(int order, Double def)
+      {  Object obj = get(order);
+         if (obj == null)
+            return(def);
+         return(Double.class.isAssignableFrom(obj.getClass())?((Double)obj).doubleValue():new Double(""+obj));
+      }
+
+      public String toString(String delim, String extraVals, ArrayList<ArrayList<String>> drillRows)
+      {  StringBuilder b = new StringBuilder();
+
+         for (int i=0; i < size(); i++)
+         {  if (b.length() > 0)
+                b.append(delim);
+
+            Object cell = get(i);
+
+            if (cell == null)
+            {  b.append("n/a");
+            }
+            else if (cell.getClass() == Double.class)
+            {  if ("file".equals(cmdParser.getParam("reportDest")))
+                  b.append(String.format(doubleFormat, cell));
+               else
+                  b.append(String.format(doubleSepFormat, cell));
+            }
+            else
+            {  b.append(cell.toString());
+            }
+         }
+
+         if (extraVals.length() > 0)
+         {  if (b.length() > 0)
+              // b.append(delim);  //you have already appended it in line 1432
+
+            b.append(extraVals);
+         }
+
+         b.append("\n");
+
+         if (requestedTradeActivity && (drillRows.size() > 0))
+         {   b.append(delim + "TradeActivity.Field" + delim + "TradeActivity.NewValue" + delim + "TradeActivity.OldValue\n");
+
+             for (int i = 0; i < drillRows.size(); i++)
+             {  ArrayList<String> dr = drillRows.get(i);
+
+                b.append(delim + dr.get(0) + delim + dr.get(1) + delim + dr.get(2) + "\n");
+             }
+         }
+
+         return(b.toString());
+      }
+
+      public ArrayList<ArrayList<String>> getDrillRows()
+      {  ArrayList<ArrayList<String>> drillRows = new ArrayList<ArrayList<String>>();
+
+         if (posIds != null)
+         {  Iterator<String> iter = posIds.iterator();
+
+            while (iter.hasNext())
+            {  String posId = iter.next();
+
+               ArrayList<ArrayList<String>> rows = tradeActivity.get(posId);
+
+               Iterator<ArrayList<String>> rowsIter = rows.iterator();
+
+               while (rowsIter.hasNext())
+               {  ArrayList<String> row = rowsIter.next();
+
+                  String str = row.get(0);
+
+                  if ("".equals(str))
+                     row.set(0, "trade[" + posId + "]");
+                  else
+                     row.set(0, "trade[" + posId + "]/" + str);
+
+                  drillRows.add(row);
+               }
+            }
+         }
+
+         if (legIds != null)
+         {  Iterator<String> iter = legIds.iterator();
+
+            while (iter.hasNext())
+            {  String posId = iter.next();
+
+               ArrayList<ArrayList<String>> rows = legActivity.get(posId);
+
+               String ids[] = posId.split("[.]");
+
+               Iterator<ArrayList<String>> rowsIter = rows.iterator();
+
+               while (rowsIter.hasNext())
+               {  ArrayList<String> row = rowsIter.next();
+
+                  String str = row.get(0);
+
+                  row.set(0, "trade[" + ids[0] + "." + ids[1] + "]/leg[" + ids[2] + "]/" + str);
+
+                  drillRows.add(row);
+               }
+            }
+         }
+
+         Collections.sort(drillRows, new Comparator<ArrayList<String>>()
+         {  public int compare(ArrayList<String> one, ArrayList<String> two)
+            {  return(one.get(0).compareTo(two.get(0)));
+            }
+         });
+
+         return(drillRows);
+      }
+
+      HashSet<String> legIds;
+      HashSet<String> posIds;
+
+      static final long serialVersionUID = 42L;
+   }
+
+   void notifyRow() throws Throwable
+   {  lock.notify();
+
+      while (consumed==false)
+      {  lock.wait();
+      }
+
+      consumed = false;
+   }
+   
+   String[] expandColNames(String names)
+   {  StringBuilder b = new StringBuilder();
+
+      String colNames[] = names.split(",");
+
+      for (int i=0; i < colNames.length; i++)
+      {  if (colNames[i].contains("*"))
+         {  boolean gotMatch = false;
+
+            ArrayList<Column> sortedNames = new ArrayList<Column>();
+
+            Iterator<String> iter = colLookup.keySet().iterator();
+
+            while (iter.hasNext())
+            {  String colName = iter.next();
+
+               if (colName.matches(colNames[i]))
+               {  sortedNames.add(colLookup.get(colName));
+                  gotMatch = true;
+               }
+            }
+
+            if (gotMatch == false)
+               throw new RuntimeException("Could not match with any columns: " + colNames[i]);
+            
+            if (!cmdParser.hasFlag("skipSorting")) {
+            	Collections.sort(sortedNames, new TenorComparator(run.getString("eval_today_dt")));
+            }
+
+            Iterator<Column> iter2 = sortedNames.iterator();
+
+            boolean firstTime = true;
+
+            while (iter2.hasNext())
+            {  if ( (i > 0) || (firstTime == false) )
+               {  b.append(',');
+               }
+
+               firstTime = false;
+               String aName = iter2.next().colName;
+               sColumns.add(aName);
+               b.append(aName);
+            }
+         }
+         else
+         {  if ("TradeActivity".equals(colNames[i]) || 
+                "NewTrades".equals(colNames[i]) ||
+                "MaturedTrades".equals(colNames[i]) ||
+                "ModTrades".equals(colNames[i]) ||
+                "PAA.Status".equals(colNames[i]) )
+            {  
+               if (tradeActivity == null)
+                  tradeActivity = new HashMap<String, ArrayList<ArrayList<String>>>();
+
+               if ("TradeActivity".equals(colNames[i]))
+               {  requestedTradeActivity = true;
+                  continue;
+               }
+            }
+
+            if (i > 0)
+               b.append(',');
+
+            if (colNames[i].equals("ID1"))
+               colNames[i] = "Id1";
+            else if (colNames[i].equals("ID2"))
+               colNames[i] = "Id2";
+
+            sColumns.add(colNames[i]);
+            b.append(colNames[i]);
+         }
+      }
+
+      int i=0;
+     
+      for (String colName : sColumns)
+      {  Column col = colLookup.get(colName);
+
+         if (col != null)
+         {  col.sPos = i++;
+
+            while (col.numDimensions >= dimensions.size())
+            {  dimensions.add(null);
+            }
+
+            HashMap<String, ArrayList<Column> > nD = dimensions.get(col.numDimensions);
+
+            if (nD == null)
+            {  nD = new HashMap<String, ArrayList<Column> >();
+               dimensions.set(col.numDimensions, nD);
+            }
+
+            ArrayList<Column> nA;
+
+            if (col.numDimensions == 0)
+               nA = nD.get("Scalar");
+            else
+               nA = nD.get(col.valueGroupId);
+
+            if (nA == null)
+            {  nA = new ArrayList<Column>();
+
+               if (col.numDimensions == 0)
+                  nD.put("Scalar", nA);
+               else
+                  nD.put(col.valueGroupId, nA);
+            }
+
+            nA.add(col);
+
+            valueGroupIds.add(col.valueGroupId);
+         }
+      }
+
+      return(b.toString().split("[,]"));
+   }
+
+   ArrayList<Column> getGroupByPos()
+   {  ArrayList<Column> ret = new ArrayList<Column>();
+
+      for (int i=0; i < eSummaryColNames.length; i++)
+      {  Column col = colLookup.get(eSummaryColNames[i]);
+
+         if ( (col != null) && ("group".equals(col.colType) || "text".equals(col.colType) ) )
+            ret.add(col);
+      }
+
+      return(ret);
+   }
+
+   ArrayList<Integer> getSumByPos()
+   {  ArrayList<Integer> ret = new ArrayList<Integer>();
+
+      for (int i=0; i < eSummaryColNames.length; i++)
+      {  Column col = colLookup.get(eSummaryColNames[i]);
+
+         if ( (col != null) && "sum".equals(col.colType) )
+            ret.add(i);
+      }
+
+      return(ret);
+   }
+
+   void summarize() throws Throwable
+   {  ArrayList<Column> colGroupP = new ArrayList<Column>();
+      ArrayList<Column> colSumP = new ArrayList<Column>();
+      HashSet<String> colNms = new HashSet<String>();
+
+      for (int i=0; i < eSummaryColNames.length; i++)
+      {  String colName = eSummaryColNames[i];
+
+         colNms.add(colName);
+         Column col = colLookup.get(colName);
+
+         if (col == null)
+         {  String colNameReal = colAliases.get(colName);
+
+            if (colNameReal != null)
+               col = colLookup.get(colNameReal);
+
+            if (col == null)
+            {  if (cmdParser.hasFlag("allowUnknownColumns"))
+                  col = new Column(colName, "sum", numSumCols++);
+               else
+                  throw new RuntimeException("oops Unknown colName: " + colName);
+            }
+         }
+ 
+         if ("group".equals(col.colType))
+         {  colGroupP.add(col);
+            requestedColOrder.add(true);
+         }
+         else if ("text".equals(col.colType))
+         {  colSumP.add(col);
+            requestedColOrder.add(false);
+         }
+         else
+         {  colSumP.add(col);
+            requestedColOrder.add(false);
+         }
+      }
+
+      boolean deleteSumOnKeyChange = initDeleteSumOnKeyChange(colNms); 
+
+      LineNumberReader reader = 
+         new LineNumberReader(new FileReader(fileName + ".txt"));
+
+      String line;
+      
+      String prevKey = null, key = null;
+
+      boolean firstTime = true;
+      
+      synchronized(lock)
+      {  startedSummaryThread = true;
+         lock.notify();
+
+         HashMap<String, HashSet<String>> numTrades = new HashMap<String, HashSet<String>>();
+         HashMap<String, HashSet<String>> newTrades = new HashMap<String, HashSet<String>>();
+         HashMap<String, HashSet<String>> oldTrades = new HashMap<String, HashSet<String>>();
+         HashMap<String, HashSet<String>> modTrades = new HashMap<String, HashSet<String>>();
+
+         Row legRow;
+
+         while (true)
+         {  line = reader.readLine();              
+            
+            if (line == null)
+               break;
+
+            String values[] = line.split("[,]");
+            String id[] = values[0].split("@");
+            legRow = legLookup.remove(values[0]);
+            getLogger().info("legLookup.size()"+legLookup.size());
+            if (legRow == null)
+            {  continue;
+            }
+            else if (skip(legRow) == true)
+            {  continue;
+            }
+
+            String id1 = id[0];
+            String id2 = id[1];
+            String id3 = id[2];
+
+            String id12 =  id1 + "." + id2;
+            getLogger().info("values[0] "+values[0]);
+            getLogger().info("legRow "+legRow.toString());
+
+            if (includeTrades != null)
+            {  if ( (includeDeals.contains(id1) == false) && 
+                    (includeTrades.contains(id12) == false) )
+               {
+                  continue;
+               }
+            }
+
+            if (excludeTrades != null)
+            {  if ( (excludeDeals.contains(id1) == true) || 
+                    (excludeTrades.contains(id12) == true) )
+               {
+                  continue;
+               }
+            }
+
+            if (cmdParser.hasFlag("complex"))
+            {  doComplex(legRow, values);
+            }
+   
+            key = makeKey(legRow, values, colGroupP);
+   
+            if (deleteSumOnKeyChange && (prevKey != null) && (prevKey.equals(key) == false))
+            {  prevKey = key;
+               notifyRow();               
+            }
+   
+            if (firstTime)
+            {  firstTime = false;
+               prevKey = key;
+            }
+
+            HashSet<String> id12Set = numTrades.get(key);
+
+            if (id12Set == null)
+            {  id12Set = new HashSet<String>();
+               numTrades.put(key, id12Set);
+            }
+   
+            id12Set.add(id12);
+
+            id12Set = newTrades.get(key);
+
+            if (id12Set == null)
+            {  id12Set = new HashSet<String>();
+               newTrades.put(key, id12Set);
+            }
+
+            id12Set = oldTrades.get(key);
+
+            if (id12Set == null)
+            {  id12Set = new HashSet<String>();
+               oldTrades.put(key, id12Set);
+            }
+   
+            id12Set = modTrades.get(key);
+
+            if (id12Set == null)
+            {  id12Set = new HashSet<String>();
+               modTrades.put(key, id12Set);
+            }
+            
+            if (values != null && values.length > 0) {
+            	for (String v : values) {
+            		if (v != null && v.contains(";")) {
+            			v = v.replace(';', ',');
+            		}
+            	}
+            }
+
+            String status = tradeActivityStatus.get(id12);
+
+            if (status != null)
+            {  if ("New".equals(status))
+               {  newTrades.get(key).add(id12);
+               }
+               else if ("Old".equals(status))
+               {  oldTrades.get(key).add(id12);
+               }
+               else
+               {  modTrades.get(key).add(id12);
+               }
+            }
+
+            Row sArr = sums.get(key);
+            
+            boolean allowNaNs = cmdParser.hasFlag("allowNaNs");
+
+            if (sArr == null)
+            {  sArr = new Row();
+
+               for (Column col : colSumP)
+               {  if ("NumTrades".equals(col.colName))
+                  {  sArr.add(numTrades.get(key).size());
+                  }
+                  else if ("NewTrades".equals(col.colName))
+                  {  sArr.add(newTrades.get(key).size());
+                  }
+                  else if ("MaturedTrades".equals(col.colName))
+                  {  sArr.add(oldTrades.get(key).size());
+                  }
+                  else if ("ModTrades".equals(col.colName))
+                  {  sArr.add(modTrades.get(key).size());
+                  }
+                  else if ("PAA.Status".equals(col.colName))
+                  {  if (newTrades.get(key).size() > 0)
+                        sArr.add(1D);
+                     else if (oldTrades.get(key).size() > 0)
+                        sArr.add(-1D);
+                     else if (modTrades.get(key).size() > 0)
+                        sArr.add(-2D);
+                     else 
+                        sArr.add(2D);
+                  }
+                  else if ("sum".equals(col.colType))
+                  {  if (col.position < values.length) 
+                     {  String str = values[col.position];
+                        if ((str == null) || (str.length() == 0))
+                        {  if (allowNaNs)
+                              sArr.add(Double.NaN);
+                           else
+                              sArr.add(new Double(0F));
+                        }
+                        else
+                        {  sArr.add(new Double(str));
+                        }
+                     }
+                     else
+                     {  if (allowNaNs)
+                           sArr.add(Double.NaN);
+                        else
+                           sArr.add(new Double(0F));
+                     }
+                  }
+                  else if (col.fromValues)
+                  {  sArr.add(col.position<values.length?values[col.position]:"");
+                  }
+                  else
+                  {  sArr.add(legRow.get(col.position));
+                  }
+               }
+   
+               sums.put(key, sArr);
+            }
+            else
+            {  int i=0;
+   
+               for (Column col : colSumP)
+               {  if ("NumTrades".equals(col.colName))
+                  {  sArr.set(i, numTrades.get(key).size());
+                     i++;
+                  }
+                  else if ("NewTrades".equals(col.colName))
+                  {  sArr.set(i, newTrades.get(key).size());
+                     i++;
+                  }
+                  else if ("MaturedTrades".equals(col.colName))
+                  {  sArr.set(i, oldTrades.get(key).size());
+                     i++;
+                  }
+                  else if ("ModTrades".equals(col.colName))
+                  {  sArr.set(i, modTrades.get(key).size());
+                     i++;
+                  }
+                  else if ("sum".equals(col.colType))
+                  {  if (col.position < values.length)
+                     {  String str = values[col.position];
+
+                        if ((str == null) || (str.length() == 0) )
+                        {  if (allowNaNs)
+                              sArr.set(i, Double.NaN);
+                           i++;                           
+                        }
+                        else
+                        {  Double tmp = new Double(str);                           
+                           Double sum = ((Double) sArr.get(i)) + tmp;
+                           sArr.set(i++, sum);
+                        }
+                     }
+                     else
+                     {  if (allowNaNs)
+                           sArr.set(i, Double.NaN);
+                        i++;
+                     }
+                  }
+                  else
+                  {  String str;
+
+                     if (col.fromValues == true)
+                        str = col.position<values.length?values[col.position]:"";
+                     else
+                        str = legRow.getString(col.position, null);
+   
+                     if ((str != null) && (str.length() > 0) && (str.equals("0")==false))
+                        sArr.set(i, str);
+   
+                     i++;
+                  }
+               }
+            }
+
+            if (requestedTradeActivity)
+            {  String posId = id1 + "." + id2;               
+
+               if (tradeActivity.get(posId) != null)
+               {  if (sArr.posIds == null)
+                     sArr.posIds = new HashSet<String>();
+
+                  sArr.posIds.add(posId);
+               }
+
+               String legId = id1 + "." + id2 + "." + id3;
+
+               if (legActivity.get(legId) != null)
+               {  if (sArr.legIds == null)
+                     sArr.legIds = new HashSet<String>();
+
+                  sArr.legIds.add(legId);
+               }
+            }
+         }
+         reader.close();
+          
+         while (sums.size() > 0)
+         {  notifyRow();
+         }
+
+         HashSet<String> alreadyProcessedDeletedTrades = new HashSet<String>();
+
+         if (requestedTradeActivity)
+         {  Iterator<Row> iter = legLookup.values().iterator();
+
+            while (iter.hasNext())
+            {  legRow = iter.next();
+
+               if (skip(legRow) == true)
+                  continue;
+
+               String id1 = legRow.get(0).toString();
+               String id2 = legRow.get(1).toString();
+               String legNo = legRow.get(2).toString();
+
+               if ( (tradeActivity.get(id1 + "." + id2) == null) && (legActivity.get(id1 + "." + id2 + "." + legNo) == null) )
+               {  continue;
+               }
+
+               if (includeTrades != null)
+               {  if ( (includeDeals.contains(id1) == false) && 
+                       (includeTrades.contains(id1 + "." + id2) == false) )
+                  {
+                     continue;
+                  }
+               }
+
+               if (excludeTrades != null)
+               {  if ( (excludeDeals.contains(id1) == true) || 
+                       (excludeTrades.contains(id1 + "." + id2) == true) )
+                  {
+                     continue;
+                  }
+               }
+
+               String posId = id1 + "." + id2;
+
+               if (alreadyProcessedDeletedTrades.contains(posId))
+                  continue;
+
+               Row sArr = new Row();
+
+               for (Column col : colSumP)
+               {  if ("sum".equals(col.colType))
+                  {  sArr.add(new Double(0F));
+                  }
+                  else
+                  {  if (col.fromValues == true)
+                        sArr.add("Unknown");
+                     else
+                        sArr.add(legRow.get(col.position));
+                  }
+               }            
+
+               if (tradeActivity.get(posId) != null)
+               {  sArr.posIds = new HashSet<String>();
+                  sArr.posIds.add(posId);
+                  alreadyProcessedDeletedTrades.add(posId);
+               }
+               
+               posId = id1 + "." + id2 + "." + legNo;
+
+               if (legActivity.get(posId) != null)
+               {  sArr.legIds = new HashSet<String>();
+                  sArr.legIds.add(posId);
+               }
+
+               key = makeKey(legRow, null, colGroupP);
+               
+               sums.put(key, sArr);
+
+               notifyRow();
+            }
+         }
+
+         allDone = true;
+      }
+   }
+
+   public Iterator<String> getColNames()
+   {  TreeSet<String> ts = new TreeSet<String>(colLookup.keySet());
+      return(ts.iterator());
+   }
+
+   public void print() throws Throwable
+   {  print(new PrintWriter(System.out), true,false);
+   }
+
+   public void print(PrintWriter out, boolean withHeaderFlag, boolean withRunIdFlag) throws Throwable
+   {  if (cmdParser.hasFlag("c"))
+      {  printTextAvailableColumns(out);
+         return;
+      }
+
+      String reportStyle = cmdParser.getParam("reportStyle");
+      String reportFormat = cmdParser.getParam("reportFormat");
+
+      if ("DP".equals(reportStyle))
+      {  if ("text".equals(reportFormat))
+            printReportTextDP(out);
+         else
+            printReportHtmlDP(out,withHeaderFlag,withRunIdFlag);
+      }
+      else // reportStyle is norm or SSRS
+      {  if ("text".equals(reportFormat))
+            printReportText(out);
+         else
+            printReportHtml(out, withHeaderFlag,withRunIdFlag);
+      }
+
+      out.flush();
+   }
+
+   public void printTextAvailableColumns(PrintWriter b)
+   {  b.append("Available Column IDs\n");
+
+      Iterator<String> iter = getColNames();         
+
+      while(iter.hasNext())
+      {  b.append(iter.next());
+         b.append("\n");
+      }
+
+      b.append("TradeActivity\n");
+      b.flush();
+   }
+
+   void buildTextErrorsAndWarnings(PrintWriter b) throws Throwable
+   {  if (cmdParser.hasFlag("ignoreErrors"))
+         return;
+
+      String delim = cmdParser.getParam("delim");
+
+      int numCols = eSummaryColNames.length;
+
+      String extraCols = cmdParser.getParam("extraCols");
+
+      if (extraCols != null)
+         numCols += extraCols.split("[,]").length;
+
+      if (bondIndexDE)
+         numCols = 4;
+      else //if (numCols < 8)
+         numCols = 8;
+
+      while (true)
+      {  Row row = nextWarnOrError();
+
+         if (row == null)
+            break;
+
+         for (int i=0; i < numCols; i++)
+         {  if (i < numCols)
+            {  if (i==0)
+                  b.append(row.getString(i, "n/a"));
+               else
+                  b.append(delim + row.getString(i, "n/a"));
+            }
+            else
+            {  b.append(delim);
+            }
+         }
+
+         b.append('\n');
+      }
+   }
+
+   void buildHtmlErrorsAndWarnings(PrintWriter b) throws Throwable
+   {  if (cmdParser.hasFlag("ignoreErrors"))
+         return;
+
+      b.append("<h3>Errors and Warnings for Run " + run.getString("run_id") + " with End Time --> " + 
+         run.getString("run_end_dt") + ")</h3>\n");
+
+      ArrayList<Object> row = nextWarnOrError();         
+
+      if (row != null)
+      {  b.append("<table border=\"1\">\n");
+
+         b.append("<tr>\n");
+         for (Object hdr : row)
+         {  b.append("<th bgcolor=\"silver\">" +  hdr.toString() + "</th>\n");
+         }
+         b.append("</tr>\n");
+      }
+      else if ("Y".equals(run.getString("success")) == false)
+      {  b.append("<table border=\"1\">\n");
+         b.append("<tr><td>Please check logs for errors</td></tr>\n");
+         b.append("</table>\n");
+      }
+      else 
+      {  b.append("<table border=\"1\">\n");
+         b.append("<tr><td>There were no errors or warnings</td></tr>\n");
+         b.append("</table>\n");
+      }
+
+      while (row != null)
+      {  row = nextWarnOrError();
+
+         if (row == null)
+         {  b.append("</table>\n");
+            break;
+         }
+
+         b.append("<tr>");
+         for (Object hdr : row)
+         {  if (hdr == null)
+               b.append("<td>null</td>");
+            else
+               b.append("<td>" +  hdr.toString() + "</td>");
+         }
+         b.append("</tr>\n");
+      }
+   }
+
+   public void printReportText(PrintWriter b) throws Throwable
+   {  String delim = cmdParser.getParam("delim");
+
+      if ("SSRS".equals(cmdParser.getParam("reportStyle")))
+      {  b.append(run.getString("user_label"));
+         b.append(delim);
+         b.append(run.getString("success"));
+         b.append(delim);
+         b.append(run.getString("run_start_dt"));
+         b.append(delim);
+         b.append(run.getString("run_end_dt"));
+         b.append("\n");
+      }
+
+      buildTextErrorsAndWarnings(b);      
+
+      for (int i=0; i < eSummaryColNames.length; i++)
+      {  if (i > 0)
+            b.append(delim);
+
+         b.append(eSummaryColNames[i]);
+      }
+
+      String extraCols = cmdParser.getParam("extraCols");
+      String extraVals = "";
+
+      if (extraCols == null)
+      {  extraCols = "";
+      }
+      else
+      {  String arr[] = extraCols.split(",");
+         extraCols = "";
+
+         for (int i=0; i < arr.length; i++)
+         {  String arr2[] = arr[i].split("=");
+            if (arr2.length == 2)
+            {  extraCols = extraCols + delim + arr2[0];
+               extraVals = extraVals + delim + arr2[1];        
+            }
+         }
+      }
+
+      if (extraCols.length() > 0)
+         b.append(extraCols);
+
+      b.append('\n');
+      b.flush();
+
+      while (true)
+      {  if (error != null)
+            throw new RuntimeException(error);
+
+         Row row = nextRow();
+
+         if (row == null)
+            break;
+
+         ArrayList<ArrayList<String>> drillRows = row.getDrillRows();
+
+         if (requestedTradeActivity && (drillRows.size() == 0))
+            continue;
+
+         b.append(row.toString(delim, extraVals, drillRows));
+      }
+
+      b.flush();
+   }
+
+   // CalcId,CalcName,ScenarioId,ValueGroupId,ValueGroupName,KeyName
+
+   public void printReportHtml(PrintWriter b, boolean withHeaderFlag,boolean withRunIdFlag) throws Throwable
+   {  b.append("<html>\n");
+      b.append("<body>\n");
+      
+      if(withHeaderFlag){
+      buildHtmlErrorsAndWarnings(b);
+
+      b.append("<h3>Results</h3>\n");
+      }
+      
+      if (eSummaryColNames != null)
+      {  buildHtmlReportSimple(b, eSummaryColNames,withHeaderFlag,withRunIdFlag);
+      }
+
+      b.append("</body>\n");
+      b.append("</html>\n");
+      b.flush();
+   }
+
+   public void printReportTextDP(PrintWriter b) throws Throwable
+   {  if (eSummaryColNames != null)
+      {  boolean done = false;            
+
+         for (String colName : eSummaryColNames)
+         {  if ("Id1".equals(colName) || "Id2".equals(colName) || "LegNo".equals(colName))
+            {  printReportText(b);
+               done = true;
+               break;
+            }
+         }
+
+         if (done == false)
+         {  buildReportTextDP(b, eSummaryColNames);
+         }
+      }
+   }
+
+   public void printReportHtmlDP(PrintWriter b, boolean withHeaderFlag,boolean withRunIdFlag) throws Throwable
+   {  b.append("<html>\n");
+      b.append("<body>\n");
+      
+      if(withHeaderFlag){
+      buildHtmlErrorsAndWarnings(b);
+
+      b.append("<h3>Results</h3>\n");
+      }
+
+      if (eSummaryColNames != null)
+      {  boolean done = false;            
+
+         for (String colName : eSummaryColNames)
+         {  if ("Id1".equals(colName) || "Id2".equals(colName) || "LegNo".equals(colName))
+            {  buildHtmlReportSimple(b, eSummaryColNames,withHeaderFlag,withRunIdFlag);
+               done = true;
+               break;
+            }
+         }
+
+         if (done == false)
+         {  buildReportHtmlDP(b, eSummaryColNames,withHeaderFlag,withRunIdFlag);
+         }
+      }
+
+      b.append("</body>\n");
+      b.append("</html>\n");
+      b.flush();
+   }
+
+   void buildReportTextDP(PrintWriter b, String colArr[]) throws Throwable
+   {  while(true)
+      {  ArrayList<Object> row = nextRow();
+
+         if (row == null)
+            break;
+
+         ArrayList<StringBuilder> rows = new ArrayList<StringBuilder>();
+         StringBuilder headers = new StringBuilder();
+
+         int colsSoFar = 0;
+      
+         HashMap<String, ArrayList<Column> > x = dimensions.get(0);
+
+         String delim = cmdParser.getParam("delim");
+
+         StringBuilder line1 = new StringBuilder();
+         StringBuilder lineN = new StringBuilder();
+
+         int maxCols = 0;
+
+         if (x != null)
+         {  Iterator<Column> iter = x.get("Scalar").iterator();
+
+            boolean first = true;
+
+            while (iter.hasNext())
+            {   if (first==true)
+                  first = false;
+               else
+                  line1.append(delim);
+
+               line1.append(iter.next().colName);
+
+               maxCols++;
+            }
+
+            iter = x.get("Scalar").iterator();
+
+            first = true;
+   
+            while (iter.hasNext())
+            {  if (first==true)
+                  first = false;
+               else
+                  lineN.append(delim);
+
+               Object obj = row.get(iter.next().sPos);
+
+               if (obj.getClass() == String.class)
+                  lineN.append(obj.toString());
+               else if ("file".equals(cmdParser.getParam("reportDest")))
+                  lineN.append(String.format(doubleFormat, obj));
+               else
+                  lineN.append(String.format(doubleSepFormat, obj));
+            }
+         }
+
+         for (String vgId : valueGroupIds)
+         {  ArrayList<Column> cols = null;
+            int dimen = 0;
+
+            if (dimensions.size() > 1)
+            {  x = dimensions.get(dimen = 1);
+
+               if (x == null)
+               {  if (dimensions.size() > 2)
+                  {  x = dimensions.get(dimen = 2);
+
+                     if (x != null)
+                        cols = x.get(vgId);
+                  }
+               }
+               else
+               {  cols = x.get(vgId);
+
+                  if (cols == null)
+                  {  if (dimensions.size() > 2)
+                     {  x = dimensions.get(dimen = 2);
+
+                        if (x != null)
+                           cols = x.get(vgId);
+                     }
+                  }
+               }                                
+            }
+
+            if (cols == null)
+            {  continue;
+            }
+            else if (dimen == 1)
+            {  while (rows.size() < cols.size())
+               {  StringBuilder rowTmp = new StringBuilder();
+
+                  for (int i=0; i < colsSoFar; i++)
+                     rowTmp.append(delim);
+
+                  rows.add(rowTmp);
+               }
+            }
+   
+            String grid[][] = null;
+            TreeSet<Double> horiz = null;
+            TreeSet<Double> vert = null;
+
+            HashMap<Double, Integer> horizPosLU = new HashMap<Double, Integer>();
+            HashMap<Double, Integer> vertPosLU = new HashMap<Double, Integer>();
+
+            for (int i=0; i < cols.size(); i++)
+            {  Column col = cols.get(i);
+
+               if (col.numDimensions == 1)
+               {  if (i==0)
+                  {  if (headers.length() > 0)
+                        headers.append(delim);
+
+                     headers.append(col.calcName + "/Tenor" + delim + col.calcName + "/" + col.valueGroupName);
+                     colsSoFar += 2;
+                  }
+
+                  StringBuilder someRow = rows.get(i);
+               
+                  if (someRow.length() > 0)
+                     someRow.append(delim);
+
+                  if ("file".equals(cmdParser.getParam("reportDest")))
+                     someRow.append(col.keyName + delim + String.format(doubleFormat, row.get(col.sPos)));
+                  else
+                     someRow.append(col.keyName + delim + String.format(doubleSepFormat, row.get(col.sPos)));
+               }
+               else if (col.numDimensions == 2)
+               {  if (i==0)
+                  {  horiz = new TreeSet<Double>();
+                     vert = new TreeSet<Double>();
+
+                     for (int j =0; j < cols.size(); j++)
+                     {  String xy[] = cols.get(j).keyName.split("/");
+                                               
+                        horiz.add(convert2Years(xy[1])); 
+                        vert.add(convert2Years(xy[0]));;
+                     }
+
+                     int k=0;
+
+                     for (Double d : horiz)
+                     {  horizPosLU.put(d, k++);
+                     }
+
+                     k=0;
+
+                     for (Double d : vert)
+                     {  vertPosLU.put(d, k++);
+                     }
+
+                     while (rows.size() < k)
+                     {  StringBuilder someRow = new StringBuilder();
+
+                         for (int z=0; z < colsSoFar; z++)
+                            someRow.append(delim);
+
+                         rows.add(someRow);
+                     }
+
+                     colsSoFar += horizPosLU.size() + 1;
+
+                     grid = new String[k][horizPosLU.size()];
+                  }
+
+                  String xy[] = col.keyName.split("/");
+
+                  // Iterator<Double> iter = horizPosLU.keySet().iterator();
+
+                  int horizPos = horizPosLU.get(convert2Years(xy[1]));
+                  int vertPos = vertPosLU.get(convert2Years(xy[0]));
+
+                  if ("file".equals(cmdParser.getParam("reportDest")))
+                     grid[vertPos][horizPos] = String.format(doubleFormat, row.get(col.sPos));
+                  else
+                     grid[vertPos][horizPos] = String.format(doubleSepFormat, row.get(col.sPos));
+               }
+            }
+
+            if (grid != null)
+            {  if (headers.length() > 0)
+                  headers.append(delim);
+
+               headers.append(cols.get(0).calcName + "/" + cols.get(0).valueGroupName);
+          
+               for (Double d : horiz)
+               {  headers.append(delim + convert(d));
+               }
+
+               Iterator<Double> iter = vert.iterator();
+
+               for (int a=0;  a < grid.length; a++)
+               {  StringBuilder someRow = rows.get(a);
+
+                  if (someRow.length() > 0)
+                     someRow.append(delim);
+
+                  someRow.append(convert(iter.next()));
+
+                  for (int c=0; c < grid[a].length; c++)
+                  {  someRow.append(delim);
+
+                     if (grid[a][c] != null)
+                        someRow.append(grid[a][c]);
+                  }
+               }
+            }
+         }
+
+               if (line1!=null&&line1.length()>0) {
+                   
+               }
+       
+         if (line1!=null&&line1.length()>0) 
+         {   while (maxCols < colsSoFar)
+             {  maxCols++;
+                line1.append(delim);
+             }
+ 
+             b.append(line1);
+             b.append("\n");
+         }
+
+         if (lineN!=null&&lineN.length()>0) {
+             b.append(lineN);
+             b.append("\n");
+         }
+         b.append(headers); 
+         b.append("\n");
+
+         for (int i=0; i < rows.size(); i++)
+         {  StringBuilder b1 = rows.get(i);
+            b.append(b1); 
+            b.append("\n");
+         }
+      }
+
+      b.flush();
+   }
+
+   void buildReportHtmlDP(PrintWriter b, String colArr[],boolean withHeaderFlag, boolean withRunIdFlag) throws Throwable
+   {  b.append("<table border=\"1\">\n");
+
+      while(true)
+      {  ArrayList<Object> row = nextRow();
+
+         if (row == null)
+            break;
+
+         ArrayList<StringBuilder> htmlRows = new ArrayList<StringBuilder>();
+         StringBuilder htmlHeaders = new StringBuilder("<tr>");
+
+         int htmlColsSoFar = 0;
+      
+         HashMap<String, ArrayList<Column> > x = dimensions.get(0);
+
+         if (x != null)
+         {  Iterator<Column> iter = x.get("Scalar").iterator();
+
+            b.append("<tr>");
+
+            while (iter.hasNext())
+            {   b.append("<th>" + iter.next().colName + "</th>");
+            }
+
+            b.append("</tr>\n");
+
+            iter = x.get("Scalar").iterator();
+
+            b.append("<tr>");
+
+            while (iter.hasNext())
+            {  Object obj = row.get(iter.next().sPos);
+
+               if (obj.getClass() == String.class)
+                  b.append("<td>" + obj + "</td>");
+               else
+                  b.append("<td>" + String.format(doubleSepFormat, obj) + "</td>");
+            }
+
+            b.append("</tr>\n");
+         }
+
+         for (String vgId : valueGroupIds)
+         {  ArrayList<Column> cols = null;
+            int dimen = 0;
+
+            if (dimensions.size() > 1)
+            {  x = dimensions.get(dimen = 1);
+
+               if (x == null)
+               {  if (dimensions.size() > 2)
+                  {  x = dimensions.get(dimen = 2);
+
+                     if (x != null)
+                        cols = x.get(vgId);
+                  }
+               }
+               else
+               {  cols = x.get(vgId);
+
+                  if (cols == null)
+                  {  if (dimensions.size() > 2)
+                     {  x = dimensions.get(dimen = 2);
+
+                        if (x != null)
+                           cols = x.get(vgId);
+                     }
+                  }
+               }                                
+            }
+
+            if (cols == null)
+            {  continue;
+            }
+            else if (dimen == 1)
+            {  while (htmlRows.size() < cols.size())
+               {  StringBuilder htmlRow = new StringBuilder("<tr>");
+
+                  for (int i=0; i < htmlColsSoFar; i++)
+                     htmlRow.append("<td></td>");
+
+                  htmlRows.add(htmlRow);
+               }
+            }
+   
+            String grid[][] = null;
+            TreeSet<Double> horiz = null;
+            TreeSet<Double> vert = null;
+
+            HashMap<Double, Integer> horizPosLU = new HashMap<Double, Integer>();
+            HashMap<Double, Integer> vertPosLU = new HashMap<Double, Integer>();
+
+            for (int i=0; i < cols.size(); i++)
+            {  Column col = cols.get(i);
+
+               if (col.numDimensions == 1)
+               {  if (i==0)
+                  {  htmlHeaders.append("<th>" + col.calcName + "/Tenor</th><th>" + col.calcName + "/" + 
+                        col.valueGroupName + "</th>");
+
+                     htmlColsSoFar += 2;
+                  }
+
+                  StringBuilder htmlRow = htmlRows.get(i);
+               
+                  htmlRow.append("<td>" + col.keyName + "</td><td>" + String.format(doubleSepFormat, row.get(col.sPos)) + "</td>");
+               }
+               else if (col.numDimensions == 2)
+               {  if (i==0)
+                  {  horiz = new TreeSet<Double>();
+                     vert = new TreeSet<Double>();
+
+                     for (int j =0; j < cols.size(); j++)
+                     {  String xy[] = cols.get(j).keyName.split("/");
+                                               
+                        horiz.add(convert2Years(xy[1])); 
+                        vert.add(convert2Years(xy[0]));;
+                     }
+
+                     int k=0;
+
+                     for (Double d : horiz)
+                     {  horizPosLU.put(d, k++);
+                     }
+
+                     k=0;
+
+                     for (Double d : vert)
+                     {  vertPosLU.put(d, k++);
+                     }
+
+                     while (htmlRows.size() < k)
+                     {  StringBuilder htmlRow = new StringBuilder("<tr>");
+
+                         for (int z=0; z < htmlColsSoFar; z++)
+                            htmlRow.append("<td></td>");
+
+                         htmlRows.add(htmlRow);
+                     }
+
+                     htmlColsSoFar += horizPosLU.size() + 1;
+
+                     grid = new String[k][horizPosLU.size()];
+                  }
+
+                  String xy[] = col.keyName.split("/");
+
+                  // Iterator<Double> iter = horizPosLU.keySet().iterator();
+
+                  int horizPos = horizPosLU.get(convert2Years(xy[1]));
+                  int vertPos = vertPosLU.get(convert2Years(xy[0]));
+
+                  grid[vertPos][horizPos] = String.format(doubleSepFormat, row.get(col.sPos));
+               }
+            }
+
+            if (grid != null)
+            {  htmlHeaders.append("<th>" + cols.get(0).calcName + "/" + cols.get(0).valueGroupName + "</th>");
+            
+               for (Double d : horiz)
+               {  htmlHeaders.append("<th>" + convert(d) + "</th>");
+               }
+
+               Iterator<Double> iter = vert.iterator();
+
+               for (int a=0;  a < grid.length; a++)
+               {  StringBuilder htmlRow = htmlRows.get(a);
+
+                  htmlRow.append("<td>" + convert(iter.next()) + "</td>");
+
+                  for (int c=0; c < grid[a].length; c++)
+                  {  if (grid[a][c] == null)
+                        htmlRow.append("<td></td>");
+                     else
+                        htmlRow.append("<td>" + grid[a][c] + "</td>");
+                  }
+               }
+            }
+         }
+
+         b.append(htmlHeaders); b.append("</tr>\n");
+
+         for (int i=0; i < htmlRows.size(); i++)
+         {  StringBuilder b1 = htmlRows.get(i);
+            b.append(b1); 
+            b.append("</tr>\n");
+         }
+         //b.flush();
+      }
+
+      b.append("</table>\n");
+      b.flush();
+   }
+
+   double convert2Years(String str)
+   {  if (Character.isDigit(str.charAt(str.length()-1)))
+         return(Double.parseDouble(str));
+
+      str = str.toLowerCase();
+
+      int idx = 0;
+
+      while ((idx < str.length() && (Character.isDigit(str.charAt(idx)) || (str.charAt(idx) == '.'))))
+         idx++;
+
+      double ret = Double.parseDouble(str.substring(0, idx));
+
+      char unit = str.charAt(idx);
+
+      if (unit == 'w')
+         ret *= 7D;
+      else if (unit == 'm')
+         ret *= 30D;
+       else if (unit == 'y')
+         ret *= 360D;
+
+      return(ret / 360D);            
+   }
+
+   String convert(Double d)
+   {  if (d == Math.round(d))
+         return(String.format("%dY", d.intValue()));
+
+     
+      d = d * 12D;
+      
+      if(d >=0.99)
+    	return(String.format("%dM", (int) Math.rint(d)));
+       
+      d = d *52D /12D;
+      
+      return(String.format("%dW", (int) Math.rint(d)));
+   }
+
+   void buildHtmlReportSimple(PrintWriter b, String colArr[],boolean withHeaderFlag, boolean withRunIdFlag) throws Throwable
+   {  b.append("<table border=\"1\">\n");
+      b.append("<tr>\n");
+      
+      if(withRunIdFlag)
+    	  b.append("<th bgcolor=\"silver\">" + run.getString("run_id") + "</th>");
+      
+      
+      if(withHeaderFlag){
+        for (String colName : eSummaryColNames)
+        {  b.append("<th bgcolor=\"silver\">" + colName + "</th>");
+         }
+      }
+      
+      int clen = eSummaryColNames.length;
+
+      if (tradeActivity != null)
+      {  while (clen < 5)
+         {  b.append("<th bgcolor=\"silver\">&nbsp</th>");
+            clen++;
+         }
+      }
+
+      b.append("</tr>");
+         
+      Row row;
+      String tdOpen="<td>", tdClose="</td>";
+
+      try 
+      {  while (true)
+         {  row = nextRow();
+
+            if (row == null)
+            {  break;
+            }            
+
+            ArrayList<ArrayList<String>> drillRows = row.getDrillRows();
+
+            if (requestedTradeActivity && (drillRows.size() == 0))
+               continue;
+
+            b.append("<tr>");
+            
+            if(withRunIdFlag)
+            	 b.append(tdOpen).append(run.getString("run_id")).append(tdClose);
+          	 
+
+            for (Object obj : row)
+            {
+            	if (obj == null)
+                  b.append("<td>n/a</td>");
+               else if (obj.getClass().getName().equals("java.lang.Double"))
+                  b.append("<td align=\"right\">").append(String.format(doubleSepFormat, obj)).append(tdClose);
+               else
+                  b.append(tdOpen).append(obj.toString()).append(tdClose);
+            }
+
+            if (requestedTradeActivity)
+            {  clen = eSummaryColNames.length;
+
+               while (clen < 5)
+               {  b.append("<td bgcolor=\"silver\">&nbsp</td>");
+                  clen++;
+               }
+            }
+
+            b.append("</tr>\n");
+
+            if (requestedTradeActivity && (drillRows.size() > 0))
+            {  b.append("<tr>");
+
+               b.append("<th></th>");
+               b.append("<th bgcolor=\"silver\">Field</th>");
+               b.append("<th bgcolor=\"silver\">New Value</th>");
+               b.append("<th bgcolor=\"silver\">Old Value</th>");
+
+               clen = eSummaryColNames.length;
+
+               while (clen > 4)
+               {  b.append("<th bgcolor=\"silver\">&nbsp</th>");
+                  clen--;
+               }
+               
+               b.append("</tr>");
+
+               for (int i = 0; i < drillRows.size(); i++)
+               {  ArrayList<String> dr = drillRows.get(i);
+   
+                  b.append("<tr>");
+
+                  String x = dr.get(0); if ("".equals(x)) x = "&nbsp";
+                  String y = dr.get(1); if ("".equals(y)) y = "&nbsp";
+                  String z = dr.get(2); if ("".equals(z)) z = "&nbsp";
+
+                  b.append("<td>&nbsp</td>");
+                  b.append("<td bgcolor=#F3F781>" + x + "</td>");
+                  b.append("<td bgcolor=#F3F781>" + y + "</td>");
+                  b.append("<td bgcolor=#F3F781>" + z + "</td>");
+
+                  clen = eSummaryColNames.length;
+
+                  while (clen > 4)
+                  {  b.append("<td bgcolor=#F3F781>&nbsp</td>");
+                     clen--;
+                  }
+
+                  b.append("</tr>");
+               }
+            }
+         }
+      } 
+      catch (OutOfMemoryError t)
+      {   getLogger().error("Not enough memory to complete request.");
+          b.append("<tr><td>").append("Not enough memory to complete request. Please modify the request to reduce the amount of data requested").append("</td></tr>\n");
+      }
+
+      b.append("</table>\n");
+      b.flush();
+   }
+
+   Row composeRow()
+   {  String key = sums.keySet().iterator().next();
+      getLogger().info("key is "+key);
+      Row values = sums.remove(key);
+      getLogger().info("values "+values);
+      
+      String keys[] = key.split("@");
+      if (key.endsWith("@")) {
+          String[] keys2 = new String[keys.length+1];
+          for (int i=0; i<keys.length;i++) {
+              keys2[i]=keys[i];
+          }
+          keys2[keys2.length-1]="";
+          keys=keys2;
+      }
+
+      Row ret = new Row();
+      ret.posIds = values.posIds;
+      ret.legIds = values.legIds;
+
+      for (int i=0, j=0, k=0; i < requestedColOrder.size(); i++)
+      {  
+    	  if (requestedColOrder.get(i))
+         {       	 
+    	  ret.add(keys[k++]);
+    	 
+         }
+         else
+         {  ret.add(values.get(j++));
+        
+         }
+      }
+
+      return(ret);
+   }
+
+   void initCols() throws Throwable
+   {  initCol("RunId", "group");
+	  initCol("Id1", "group"); 
+      initCol("Id2", "group");
+      initCol("LegNo", "group");       // legColumns.add("LegNo");
+      initCol("OasysLegNo", "group");  // legColumns.add("OasysLegNo");
+      initCol("Book", "group");
+      initCol("Account", "group");
+      initCol("Product", "group");
+      initCol("MatDt", "group");
+      initCol("LegType", "group");     // legColumns.add("LegType");
+      initCol("PayRec", "group");      // legColumns.add("PayRec");
+      initCol("IndexCode", "group");   // legColumns.add("IndexCode");
+      initCol("Rate", "text");         // legColumns.add("Rate");
+      initCol("Notional", "text");     // legColumns.add("Notional");
+      initCol("StartDt", "text");      // legColumns.add("StartDt");
+      initCol("Customer", "group");
+      initCol("CustomerMnemonic", "group");
+      initCol("FundingSource", "group");
+      initCol("Funding", "group");
+      initCol("LegMatDt", "group");    // legColumns.add("LegMatDt");
+      initCol("OpsId", "group");
+      initCol("Coeff", "group");       // legColumns.add("Coeff");
+      initCol("PayFreq", "group");     // legColumns.add("PayFreq");
+      initCol("CmpFreq", "group");     // legColumns.add("CmpFreq");
+      initCol("ResetFreq", "group");   // legColumns.add("ResetFreq");
+      initCol("LegalEntity", "group");
+      initCol("RecTime", "group");
+      initCol("InitExchange", "group");   // legColumns.add("InitExchange");
+      initCol("FinalExchange", "group");  // legColumns.add("FinalExchange");
+      initCol("DayCount", "group");       // legColumns.add("DayCount");
+      initCol("Currency", "group");       // legColumns.add("Currency");
+      initCol("SubProduct", "group");     // legColumns.add("SubProduct");
+      initCol("NotificationDays", "group");
+      initCol("NotificationCalendar", "group");
+      initCol("Status", "group"); // active or terminated
+      initCol("InternalId", "group"); // internal id - msd_security_id
+
+      LineNumberReader reader = 
+         new LineNumberReader(new FileReader(fileName + ".headers.txt"));
+
+      while (true)
+      {  String line = reader.readLine();
+         if (line == null)
+            break;
+         else if ("GOOD".equals(line))
+            break;
+
+         if (line.contains("Validation")) {
+        	 initTextCol(line, "text");      // validation columns
+         }
+         else {
+             initSumCol(line);
+         }
+      }
+      reader.close();
+
+      initSumCol("NumTrades");
+      initSumCol("NewTrades");
+      initSumCol("MaturedTrades");
+      initSumCol("ModTrades");
+
+      initSumCol("PAA.Status");
+   }
+
+   void initCol(String name, String type)
+   {  Column col = new Column(name, type, numGroupCols++);
+      colLookup.put(col.colName, col);
+   }
+
+   void initTextCol(String name, String type)
+   {  Column col = new Column(name, type, numSumCols++);
+      col.fromValues = true;
+      colLookup.put(col.colName, col);
+   }
+
+   void initSumCol(String name)
+   {  Column col = new Column(name, "sum", numSumCols++);
+      colLookup.put(col.colName, col);       
+   }
+
+   boolean initDeleteSumOnKeyChange(HashSet<String> colNames)
+   {  boolean byLegNo = false;
+       
+      if (colNames.contains("LegNo"))
+      {  byLegNo = true;
+      }
+
+      boolean byId2 = false;      
+      if (colNames.contains("Id2"))
+      {  byId2 = true;
+      }
+      
+      boolean byId1 = false;
+      if (colNames.contains("Id1"))
+      {  byId1 = true;
+      }
+
+      if ((byLegNo == true) && (byId2 == false))
+      {  throw new RuntimeException("U want to group by LegNo and leave out Id2! Really?");
+      }
+
+      if ((byId2 == true) && (byId1 == false))
+      {  throw new RuntimeException("U want to group by Id2 and leave out Id1! Really?");
+      }
+
+      return(byId1);
+   }
+
+   String makeKey(Row row, String values[], ArrayList<Column> positions)
+   {  StringBuilder ret = new StringBuilder();
+
+      boolean first = true;
+
+      for (Column col : positions)
+      {  if (first == true)
+         {  first = false;
+         }
+         else
+         {  ret.append("@");
+         }
+
+         if (col.fromValues)
+         {  if (values == null)
+               ret.append("Unknown");
+            else if (col.position < values.length)
+            {  String s = values[col.position];
+               if (s.length() > 0)
+                  ret.append(s);
+               else
+                  ret.append("Unknown");
+            }
+            else
+               ret.append("Unknown");
+         }
+         else
+            ret.append(row.getString(col.position, "Unknown"));
+      }
+
+      return(ret.toString());
+   }
+
+   public static void initCmdLineOptions(CommandLineParser cp) throws Throwable
+   {  cp.setOptionalParam("r", null);
+      cp.setOptionalParam("g", null);
+      cp.setOptionalParam("u", null);
+      cp.setOptionalParam("s", "Book,q2.MARK");
+
+      cp.setOptionalFlag("c");
+      cp.setOptionalFlag("h");
+
+      cp.setOptionalParam("t", null);
+      cp.setOptionalParam("account", null);
+      cp.setOptionalParam("book", null);
+      cp.setOptionalParam("indexCode", null);
+      cp.setOptionalParam("legType", null);
+      cp.setOptionalParam("product", null);
+      cp.setOptionalParam("customerMnemonic", null);
+      cp.setOptionalParam("funding", null);
+      cp.setOptionalParam("subProduct", null);
+      cp.setOptionalParam("legalEntity", null);
+
+      cp.setOptionalParam("xT", null);
+      cp.setOptionalParam("xAccount", null);
+      cp.setOptionalParam("xBook", null);
+      cp.setOptionalParam("xIndexCode", null);
+      cp.setOptionalParam("xLegType", null);
+      cp.setOptionalParam("xProduct", null);
+      cp.setOptionalParam("xCustomerMnemonic", null);
+      cp.setOptionalParam("xFunding", null);
+      cp.setOptionalParam("xSubProduct", null);
+      cp.setOptionalParam("xLegalEntity", null);
+
+      cp.setOptionalParam("reportStyle", "norm");
+      cp.setOptionalParam("reportFormat", "text");
+      cp.setOptionalParam("reportDest", "file");
+      
+      cp.setOptionalParam("dealDt", null);
+      cp.setOptionalParam("asOfTm", null);
+      cp.setOptionalParam("prevDealDt", null);
+      cp.setOptionalParam("extraCols", null);
+      cp.setOptionalParam("delim", "\t");
+      cp.setOptionalParam("absSort", null);
+      cp.setOptionalParam("precision", null);
+
+      cp.setOptionalFlag("complex");
+      cp.setOptionalFlag("debug");
+      cp.setOptionalFlag("ignoreErrors");
+      cp.setOptionalFlag("ignoreRunStatus");
+      cp.setOptionalFlag("allowUnknownColumns");
+      cp.setOptionalFlag("excludeMaturedTrades");
+      cp.setOptionalFlag("allowNaNs");
+      cp.setOptionalFlag("skipSorting");
+      cp.setOptionalFlag("securityIndic");
+   }
+
+   void initFilters()
+   {  initTradeFilter();
+
+      initFilter("account");
+      initFilter("book");
+      initFilter("indexCode");
+      initFilter("legType");
+      initFilter("product");
+      initFilter("customerMnemonic");
+      initFilter("funding");
+      initFilter("subProduct");
+      initFilter("legalEntity");
+
+      initFilter("xAccount");
+      initFilter("xBook");
+      initFilter("xIndexCode");
+      initFilter("xLegType");
+      initFilter("xProduct");
+      initFilter("xCustomerMnemonic");
+      initFilter("xFunding");
+      initFilter("xSubProduct");
+      initFilter("xLegalEntity");
+   }
+
+   void initTradeFilter()
+   {  String list = cmdParser.getParam("t");
+
+      if (list != null)
+      {  includeTrades = new HashSet<String>();
+         includeDeals = new HashSet<String>();
+
+         String str[] = list.split(",");
+
+         for (int i=0; i < str.length; i++)
+         {  if (str[i].contains(".") == true)
+            {  includeTrades.add(str[i]);            
+            }
+            else
+            {  includeDeals.add(str[i]);
+            }
+         }
+      }
+
+      list = cmdParser.getParam("xT");
+
+      if (list != null)
+      {  excludeTrades = new HashSet<String>();
+         excludeDeals = new HashSet<String>();
+
+         String str[] = list.split(",");
+
+         for (int i=0; i < str.length; i++)
+         {  if (str[i].contains(".") == true)
+            {  excludeTrades.add(str[i]);            
+            }
+            else
+            {  excludeDeals.add(str[i]);
+            }
+         }
+      }
+   }
+
+   void initFilter(String filter)
+   {  String list = cmdParser.getParam(filter);
+
+      if (list != null)
+      {  HashSet<String> set = new HashSet<String>();
+
+         String str[] = list.split(",");
+
+         for (int i=0; i < str.length; i++)
+            set.add(str[i]);
+
+         filters.put(filter, set);
+      }
+   }
+
+   void initDBConnections() throws Throwable
+   {  DriverManager.registerDriver((Driver)Class.forName("net.sourceforge.jtds.jdbc.Driver").newInstance());
+
+      // Oracle
+
+      conn = DAO.getConnection();
+
+      stOracle = conn.createStatement();
+   }
+
+   String initAllRunPks(GenericVO run, Statement stOracle) throws Throwable
+   {  String runIds = run.getString("run_pk");
+
+      if (run.getString("parent_run_id") != null)
+      {  
+          ResultSet rs = stOracle.executeQuery(
+                  "select run_pk from RiskApp.run\n" +
+                  "where run_id = '" + run.getString("parent_run_id") + "'");
+          if (rs.next()) {
+              runIds = runIds + "," + rs.getString(1);
+          }
+          try {rs.close();} catch (SQLException e){}
+      }
+
+      ResultSet rs = stOracle.executeQuery(
+         "select run_pk from RiskApp.run\n" +
+         "where parent_run_id = '" + run.getString("run_id") + "'");
+
+      while (rs.next())
+      {  runIds = runIds + "," + rs.getString(1);
+      }
+      try {rs.close();} catch (SQLException e){}
+     
+      return(runIds);
+   }
+
+   @SuppressWarnings("unchecked")
+   void initLegLookup(String asrtTimeSql, String runId) throws Throwable
+   {   getLogger().info("runId: "+runId);
+	   String dealDt = cmdParser.getParam("dealDt");
+
+      if (dealDt == null)
+      {  dealDt = run.getString("deal_dt");
+      }
+
+      String prevDealDt = cmdParser.getParam("prevDealDt");
+
+      if (prevDealDt == null)
+      {  prevDealDt = run.getString("deal_prev_dt");
+      }
+
+      // initInstrument(dealDt, prevDealDt);
+     
+      String endDt = run.getString("run_end_dt");
+      if(endDt!=null)
+    	 endDt = endDt.replaceAll("[-: .]", "").substring(0, 14);
+      else 
+    	  endDt="0";
+      
+      cacheId = dealDt + (cacheIdSuffix==null?"":cacheIdSuffix);
+      String timestamp = cacheIdSuffix==null?endDt:"0";
+
+     // Logger.getLogger(DataExplorer.class).info("useMomentoes " +useMomentoes +" get legs "+cacheId+" at " +timestamp );
+      
+      legLookup = useMomentoes?(HashMap<String, Row>) masterLookup.getPayLoad("legs",cacheId,timestamp):null;
+
+      if (legLookup == null)
+      {  
+    	  Logger.getLogger(DataExplorer.class).info(" useMomentoes " +useMomentoes +" get legs "+cacheId+" at " +timestamp +" return legLookup is null");
+    	 legLookup = new HashMap<String, Row>();
+
+    	 if (bondIndexDE) {
+             initIndexFromDB(runId,dealDt, getTimeSql(dealDt), asrtTimeSql);
+    	 }
+    	 else if (useDsLibEntity) {
+             initSecurityIndic(runId,dealDt);
+    	 }
+    	 else {
+             initLegsFromDB(runId,dealDt, true,getTimeSql(dealDt),asrtTimeSql);
+             initLegsFromDB(runId,prevDealDt, false,getTimeSql(prevDealDt),asrtTimeSql);
+             initCash(runId,dealDt, prevDealDt);
+             initMbond(runId);
+    	 }
+
+         if (useMomentoes) masterLookup.putPayLoad("legs",cacheId, legLookup.clone());
+      }
+      else
+      {   Logger.getLogger(DataExplorer.class).info(" useMomentoes " +useMomentoes +" get legs "+cacheId+" at " +timestamp +" return legLookup is not null");
+    	  legLookup = (HashMap<String, Row>) legLookup.clone();
+      }
+  	  updateIncludedDealIds();
+   }
+
+   void initCash(String runId,String dealDt, String prevDealDt)
+   {  String sql;
+
+      if (cmdParser.hasFlag("excludeMaturedTrades"))
+      {  sql = "select p.account, p.cusip, p.position, p.version_id, rec_time\n" +
+               "from RiskApp.position p\n" + 
+               "where p.version_id = '" + dealDt + "'\n" +
+               "order by p.version_id";
+      }
+      else
+      {  sql = "select p.account, p.cusip, p.position, p.version_id, rec_time\n" +
+               "from RiskApp.position p\n" + 
+               "where p.version_id in ('" + dealDt + "','" + prevDealDt + "')\n" +
+               "order by p.version_id desc";
+      }
+
+      String cusip = null, account = null;
+
+      if (cmdParser.hasFlag("debug"))
+      {  getLogger().info("SQL: " + sql);
+      }
+
+      try
+      {  ResultSet rs = stOracle.executeQuery(sql);
+
+         while (rs.next())
+         {  account = rs.getString(1).trim();
+
+            String book = accountBookMap.get(account);
+
+            if (book == null)
+            {  continue;
+            }
+
+            cusip = rs.getString(2).trim();
+            
+            String notional = rs.getString(3).trim();
+
+            String product = "bond";
+
+            if (cusip.startsWith("296996"))
+            {  product = "efut";
+               cusip = "ED" + cusip.substring(cusip.length()-3, cusip.length()-1);
+            }
+            else if (cusip.startsWith("212726"))
+            {  product = "sfut";
+            }
+
+            Row row = new Row();
+            row.add(runId);
+            row.add(cusip);
+            row.add(account);
+
+            String key3 = String.format("%s@%s@0", cusip, account);
+
+            if (legLookup.get(key3) != null)
+               continue;
+
+            String legalEntity = legalEntityAccountMap.get(account);
+
+            if (legalEntity == null)
+               legalEntity = "";
+            else
+               legalEntity = legalEntity.trim();
+
+            String dealDt2 = rs.getString(4);
+
+            row.add("0");
+            row.add("0");
+            row.add(book);
+            row.add(account); 
+            row.add(product); 
+            row.add(""); // row.add(instr.matDt);
+            row.add("XL");
+            row.add("R");
+            row.add(product);            
+            row.add(""); // row.add(instr.coupon);
+            row.add(notional);
+            row.add(""); // row.add(instr.startDt);
+            row.add("Exchange Traded");
+            row.add("Exchange Traded"); // row.add(instr.exchangeKey);
+            row.add("default");
+            row.add("USD.FEDFUND");
+            row.add(""); // row.add(instr.matDt);
+            row.add("n/a");
+            row.add("n/a");
+            row.add("unknown");
+            row.add("unknown");
+            row.add("n/a");
+            row.add(legalEntity);
+            row.add(rs.getString(5));
+            row.add("0"); //InitExchange
+            row.add("0"); //FinalExchange
+            row.add("0"); //DayCount
+            row.add("USD"); //Currency
+            row.add("Other"); //SubProduct
+            row.add(null); //NotificationDays
+            row.add(null); //NotificationCalendar
+
+            if (dealDt2.equals(prevDealDt))
+               row.add("TERM");
+            else
+               row.add("ACT");
+
+            row.add("");
+            row.add(null); // why this is added ? TradeActivity ? -SQ
+
+            legLookup.put(key3, row);
+         }         
+      }
+      catch(Throwable e)
+      {  if (cusip == null)
+            cusip = "Unknown";
+         if (account == null)
+            account = "Unknown";
+
+         getLogger().error("cusip: " + cusip + ", account: " + account);
+
+         getLogger().error(e,e);
+      }
+   }
+   
+   private List<MuniBond> getMbondPositions(String runId) throws SQLException {
+       return getTradeDAO().getMBondPositions(runId);
+   }
+   
+   private TradeDAO getTradeDAO() {
+       return (TradeDAO)SpringUtil.getBean("RMSDatabase_applicationContext.xml","TradeDAO");
+   }
+   
+   private RunDAO getRunDAO() {
+       return (RunDAO)SpringUtil.getBean("RMSDatabase_applicationContext.xml","RunDAO");
+   }   
+   
+   private DsLibDAO getDsLibDAO() {
+      if (dsLibDAO == null) {
+	     dsLibDAO = (DsLibDAO)SpringUtil.getBean("RMSDatabase_applicationContext.xml","DsLibDAO");
+	  }
+      return dsLibDAO;
+   }   
+   
+   void initMbond(String runId) throws SQLException, CloneNotSupportedException
+   {
+       List<TransactionHeaderVO.MuniBond> mbondPositions = null;
+       if (!bondIndexDE && !useDsLibEntity) {
+           mbondPositions = this.getMbondPositions(runId);
+       }
+       if (mbondPositions!=null&&mbondPositions.size()>0) {
+           for (MuniBond mbond:mbondPositions) {
+               mbondPositionMap.put(mbond.getCusip()+"@"+mbond.getAccount(),mbond);
+               accountBookMap.put(mbond.getAccount(),mbond.getBook());
+               List<MuniBond> list = mbondCusipPositionMap.get(mbond.getCusip());
+               if (list==null) {
+                   list = new ArrayList<MuniBond>();
+                   mbondCusipPositionMap.put(mbond.getCusip(),list);
+               }
+               list.add(mbond);
+               String key = mbond.getCusip();
+               Set<String> set = mbondCusipAccountMap.get(key);
+               if (set==null) {
+                   set = new HashSet<String>();
+                   mbondCusipAccountMap.put(key,set);
+               }
+               set.add(mbond.getAccount());
+           }
+       }
+       
+       String prevDealDt = null;
+       List<MuniBond> mbondPositionsLocal = mbondPositions;
+      if (cmdParser.hasFlag("excludeMaturedTrades")) {} else {
+          Run run = getRunDAO().getRunById(runId);
+          Run prevRun = getRunDAO().getPreviousParentRun(run);
+          if (prevRun!=null) {
+              prevDealDt = prevRun.getDeal_dt();
+              List<MuniBond> mbondPositionsPrev = getTradeDAO().getMBondPositions(prevRun.getRun_id());
+              if (mbondPositionsPrev!=null) {
+                  mbondPositionsLocal = new ArrayList<MuniBond>(mbondPositions);
+                  mbondPositionsLocal.addAll(mbondPositionsPrev);
+              }
+          }
+      }
+
+      String cusip = null, account = null;
+
+      try
+      {
+          if (mbondPositions!=null) {
+              for (MuniBond mbond:mbondPositions) {
+                  account = mbond.getAccount();
+
+                  String book = accountBookMap.get(account);
+
+                  if (book == null)
+                  {  continue;
+                  }
+
+                  cusip = mbond.getCusip();
+                  
+                  String notional = ""+mbond.getNotional();
+
+                  String product = "mbond";
+
+                  Row row = new Row();
+                  row.add(runId);
+                  row.add(cusip);
+                  row.add(account);
+
+                  String key3 = String.format("%s@%s@0", cusip, account);
+
+                  if (legLookup.get(key3) != null)
+                     continue;
+
+                  String legalEntity = legalEntityAccountMap.get(account);
+
+                  if (legalEntity == null)
+                     legalEntity = "";
+                  else
+                     legalEntity = legalEntity.trim();
+
+                  String dealDt2 = ""+mbond.getPricingDate();
+
+                  row.add("0");
+                  row.add("0");
+                  row.add(book);
+                  row.add(account); 
+                  row.add(product); 
+                  row.add(""); // row.add(instr.matDt);
+                  row.add("XL");
+                  row.add("R");
+                  row.add(product);            
+                  row.add(""); // row.add(instr.coupon);
+                  row.add(notional);
+                  row.add(""); // row.add(instr.startDt);
+                  row.add("Muni Bond");
+                  row.add("Muni Bond"); // row.add(instr.exchangeKey);
+                  row.add("default");
+                  row.add("USD.FEDFUND");
+                  row.add(""); // row.add(instr.matDt);
+                  row.add("n/a");
+                  row.add("n/a");
+                  row.add("unknown");
+                  row.add("unknown");
+                  row.add("n/a");
+                  row.add(legalEntity);
+                  row.add(mbond.getPricingDate());
+                  row.add("0"); //InitExchange
+                  row.add("0"); //FinalExchange
+                  row.add("0"); //DayCount
+                  row.add("USD"); //Currency
+                  row.add("Other"); //SubProduct
+                  row.add(null); //NotificationDays
+                  row.add(null); //NotificationCalendar
+
+                  if (prevDealDt!=null&&dealDt2.equals(prevDealDt))
+                     row.add("TERM");
+                  else
+                     row.add("ACT");
+
+                  row.add("");
+                  row.add(null); // why this is added ? TradeActivity ? -SQ
+
+                  legLookup.put(key3, row);                  
+              }
+          }
+      }
+      catch(Throwable e)
+      {  if (cusip == null)
+            cusip = "Unknown";
+         if (account == null)
+            account = "Unknown";
+
+         getLogger().error("cusip: " + cusip + ", account: " + account);
+
+         getLogger().error(e,e);
+      }
+   }   
+   
+   public static String getTimeSql(String time) {
+       return "to_timestamp('"+(time.length()==8?time+eodCutOffHH24MI:time)+"','YYYYMMDDHH24MI')";
+   }
+
+   void initLegsFromDB(String runId,String dealDt, boolean add, String effTimeSql, String asrtTimeSql) throws Throwable
+   {  if (add == false)
+      {  if (legLookup.size() == 0)
+            return;
+         if (cmdParser.hasFlag("excludeMaturedTrades"))
+            return;
+      }
+   
+      initNotionalsFromDB(runId,dealDt, add, effTimeSql, asrtTimeSql);
+   
+      String sql =
+         "select th.unique_id1, th.unique_id2, l.leg_number, th.account,\n" +
+         "   th.product_type, th.final_value_date, l.leg_type,\n" +
+         "   l.pay_rec_ind, l.mkt_index, l.rate, l.notional, l.effective_date,\n" +
+         "   th.customer_name, l.oasys_leg_number, th.customer_mnemonic, l.maturity_date,\n" +
+         "   th.deal_number, l.coefficient, l.payment_freq, l.comp_freq, l.reset_freq, th.rec_time,\n" +
+         "   l.initial_exchange, l.final_exchange, l.day_count, l.currency, \n"+
+
+         "   (case when (th.product_type='cap' and l.mkt_index='MS') then 'BMACap'\n"+ 
+         "         when (th.product_type='cap' and l.leg_type='FL' and l.mkt_index not in ('MS','SW')) then 'LiborCap'\n" +
+         "         when (l.mkt_index='SW') then 'CMS' when (oi.SubProductType is not null) then oi.SubProductType else 'Other' end) as SubProductType,\n"+
+
+         "   oi.NotificationDays,oi.NotificationCalendar,th.status\n" +
+
+         "from RiskApp.transact_header th\n" +
+
+         "join RiskApp.leg l on (" + getVersionTemporalClauseFromSqls("l",effTimeSql,asrtTimeSql) + " and l.unique_id1 = th.unique_id1 and l.unique_id2 = th.unique_id2\n" +
+         "   and ( (l.leg_type = 'FE' AND l.maturity_date > " + dealDt.substring(0,8) + ") OR " +
+         "   (l.maturity_date is null OR l.maturity_date = 0 OR l.maturity_date >= " + dealDt.substring(0,8) + ") ))\n" +
+
+         "left outer join\n" +
+         "   (  select oi.unique_id1,oi.unique_id2,oi.leg_number,\n" +
+         "         (case when (trim(oi.option_class)='E' and trim(ul.mkt_index)!='MS') then 'EuropeanLiborSwaption'\n" +
+         "               when (trim(ul.mkt_index)='MS' and (strike.num_strikes>0 or (strike.num_strikes is null and oi.first_exercise_date!=oi.last_exercise_date))) then 'AmericanBMASwaption'\n" +
+         "               when (trim(ul.mkt_index)='MS' and strike.num_strikes is null) then 'EuropeanBMASwaption' else 'AmericanLiborSwaption' end) as SubProductType,\n" +
+         "                  concat(oi.notification_date,oi.notice_day_conv) as NotificationDays,\n" +
+
+         "         (case when oi.notice_calendar=1 then 'NYBANK'\n" +
+         "               when oi.notice_calendar=5 then 'NYBANK+NYSE'\n" +
+         "               when oi.notice_calendar=6 then 'NYBANK+LONDON' end) as NotificationCalendar\n" +
+         "      from riskapp.option_indic oi\n" +
+         "      left outer join (select unique_id1,unique_id2,leg_number,count(*) as num_strikes from riskapp.strike s where " + getVersionTemporalClauseFromSqls("s",effTimeSql,asrtTimeSql) + " group by unique_id1,unique_id2,leg_number) strike\n" +
+         "      on (strike.unique_id1=oi.unique_id1 and strike.unique_id2=oi.unique_id2 and strike.leg_number=oi.leg_number)\n" +
+         "      join riskapp.leg ul on\n" +
+         "         (" + getVersionTemporalClauseFromSqls("ul",effTimeSql,asrtTimeSql) + " and ul.unique_id1=oi.underlying_unique_id1 and ul.unique_id2=oi.underlying_unique_id2 and ul.leg_type='FL')\n" +
+         "      where " + getVersionTemporalClauseFromSqls("oi",effTimeSql,asrtTimeSql) + "\n" +
+         "   ) oi on (oi.unique_id1=th.unique_id1 and oi.unique_id2=th.unique_id2)\n"+
+
+         "where " + getVersionTemporalClauseFromSqls("th",effTimeSql,asrtTimeSql) + " and trim(th.status)='ACT'\n" +
+         "and th.maturity_date > " + dealDt.substring(0,8) + "\n" +
+         "and th.final_value_date >= " + dealDt.substring(0,8);
+      
+      sql += getTradeIdSql();
+
+      String id1 = null;
+      String id2 = null;
+      String legNo = null;
+      String oasysLegNo = null;
+      String subProduct = null;
+
+      ResultSet rs;
+
+      if (cmdParser.hasFlag("debug"))
+      {  getLogger().info("SQL: " + sql);
+      }
+
+      HashMap<String, String> gicsMap = new HashMap<String, String>();
+
+      try
+      {  rs = stOracle.executeQuery(sql);
+
+         while (rs.next())
+         {  String product1 = rs.getString(5).trim();
+
+            String legMatDt = rs.getString(16);
+
+            if (legMatDt == null)
+               legMatDt = "n/a";
+            else if (legMatDt.equals("0"))
+               legMatDt = "n/a";
+            else
+               legMatDt = legMatDt.trim();
+
+            if ("rtlk".equals(product1))
+            {  if (legMatDt.compareTo(dealDt) <= 0)
+                  continue;
+            }
+
+            id1 = rs.getString(1);
+            id2 = rs.getString(2);
+            legNo = rs.getString(3);
+            oasysLegNo = rs.getString(14); // Oasys leg number; not internal leg number
+
+            String legType = rs.getString(7);
+
+            if (legType == null)
+               legType = "n/a";
+            else
+               legType = legType.trim();                         
+
+            String account = rs.getString(4).trim();
+
+            if (account == null)
+               throw new RuntimeException("Yikes! Account is null for : " + id1 + "." + id2);
+
+            String book = accountBookMap.get(account);
+
+            if (book == null)
+            {  // getLogger().warn("Book match not found for account: " + account + "," + id1 + "." + id2); 
+               continue;
+            }
+
+            Row row = new Row();
+
+            String key3 = String.format("%s@%s@%s", id1, id2, legNo);
+
+            if (legLookup.get(key3) != null)
+               continue;
+
+            String indexCode = rs.getString(9);
+
+            if (indexCode == null)
+               indexCode = "n/a";
+            else
+               indexCode = indexCode.trim();
+            
+            String matDate = rs.getString(6);
+
+            if (matDate == null)
+               matDate = "n/a";
+            else if (matDate.equals("0"))
+               matDate = "n/a";
+            else
+               matDate = matDate.trim();
+
+            String payRec = rs.getString(8);
+
+            if (payRec == null)
+               payRec = "n/a";
+            else
+               payRec = payRec.trim();
+
+            String rate = rs.getString(10);
+
+            String notional =  rs.getString(11);
+            String notionalX = notionalMap.get(key3);
+            if (notionalX != null) {
+            	notional = notionalX;
+            }
+
+            String startDate = rs.getString(12);
+
+            if (startDate == null)
+               startDate = "n/a";
+            else
+               startDate = startDate.trim();
+
+            String customer = rs.getString(13).trim();
+
+            if (customer.length() == 0)
+               customer = "Unknown";
+
+            String customerMnemonic = rs.getString(15).trim();
+
+            if (customerMnemonic.length() == 0)
+               customerMnemonic = "Unknown";
+
+            row.add(runId);
+            row.add(id1);
+            row.add(id2);
+            row.add(legNo);
+            row.add(oasysLegNo);
+            row.add(book);
+            row.add(account); 
+            row.add(product1); 
+            row.add(matDate);
+            row.add(legType);
+            row.add(payRec);
+            row.add(indexCode);
+            row.add(rate);
+            row.add(notional);
+            row.add(startDate);
+            row.add(customer);
+            row.add(customerMnemonic);
+
+            String fundingSource = fundingSourceMap.get(customerMnemonic);
+
+            if (fundingSource == null)
+            {  row.add("default");
+            }
+            else
+            {  row.add(fundingSource);
+            }
+
+            String funding = cpartyFundingMap.get(customerMnemonic);
+
+            if (funding == null)
+            {  row.add("USD.FEDFUND");
+            }
+            else
+            {  row.add(funding);
+            }
+
+            row.add(legMatDt);
+
+            row.add(rs.getString(17));
+            row.add(rs.getString(18));
+            row.add(rs.getString(19));
+            row.add(rs.getString(20));
+            row.add(rs.getString(21));
+
+            String legalEntity = legalEntityAccountMap.get(account);
+
+            if (legalEntity == null)
+               legalEntity = "";
+            else
+               legalEntity = legalEntity.trim();
+
+            row.add(legalEntity);
+
+            row.add(rs.getString(22));
+           
+            String initExchange=rs.getString(23);
+
+            if (initExchange==null)
+            	initExchange = "0";
+         
+            String finalExchange=rs.getString(24);
+
+            if (finalExchange==null)
+               finalExchange = "0";
+		     
+            String dayCount=rs.getString(25);
+
+            if (dayCount==null)
+               dayCount = "0";
+	     
+            String currency=rs.getString(26);
+
+            if (currency==null)
+               currency = "Unknown";
+		    
+            row.add(initExchange);
+            row.add(finalExchange);
+            row.add(dayCount);
+            row.add(currency);
+            subProduct = rs.getString(27);
+            subProduct = subProduct == null?"Other":subProduct;
+            row.add(subProduct);
+            String notificationDays = rs.getString(28);
+            String notificationCalendar = rs.getString(29);
+            row.add(notificationDays);
+            row.add(notificationCalendar);
+
+            if (add == false)
+            {  row.add("TERM");
+            }
+            else
+            {  String status = rs.getString(30);
+
+               if (status == null)
+                  status = "Unknown";
+               else
+                  status = status.trim();
+
+                row.add(status);
+            }
+
+            row.add("");
+            row.add(null); // not sure wht this is needed; TradeActivity ? -SQ
+
+            if (tradeActivity == null)
+            {  if ("gic".equals(product1) && cmdParser.hasFlag("complex"))
+               {  if ("MR".equals(indexCode) || "GR".equals(indexCode) || "UR".equals(indexCode) )
+                  {  continue;  // repo leg
+                  }
+                  else if ("FL".equals(legType))
+                  {  String key2 = String.format("%s@%s", id1, id2);
+                     String otherLegKey = gicsMap.get(key2);
+                     legLookup.remove(otherLegKey); // removing fixed leg but need for trade activity
+                     gicsMap.put(key2, key3);
+                  }
+                  else
+                  {  String key2 = String.format("%s@%s", id1, id2);
+
+                     if (gicsMap.get(key2) == null)
+                        gicsMap.put(key2, key3);
+                  }
+               }
+            }
+
+            legLookup.put(key3, row);
+         }
+      }
+      catch(Throwable e)
+      {  if (id1 == null)
+            id1 = "Unknown";
+         if (id2 == null)
+            id2 = "Unknown";
+         if (legNo == null)
+            legNo = "Unknown";         
+
+         getLogger().error("Id1: " + id1 + ", Id2: " + id2 + ", LegNo " + legNo);
+
+         getLogger().error(sql,e);
+      }
+   }
+
+   void initIndexFromDB(String runId,String dealDt, String effTimeSql, String asrtTimeSql) throws Throwable
+   {
+	  String sql;
+      sql = "select sec.msd_security_id, pt.product, xref.xrefvalue as security_id, xrc.xrefcode as id_type \n" +
+            "from SECURITYINDIC.security sec \n" +
+            "join SECURITYINDIC.product_type pt on (sec.product_id = pt.product_id and pt.product in ('MINDEX')) \n" +
+            "join SECURITYINDIC.security_xref xref on (sec.msd_security_id = xref.msd_security_id and " + getTemporalClauseSECFromSqls("xref",effTimeSql,asrtTimeSql) + ") \n" +
+            "join SECURITYINDIC.xref_code xrc on (xref.xref_code_id = xrc.id and xrc.xrefcode in ('MINDEX')) \n" +
+            "where (sec.final_value_dt is null or sec.final_value_dt > " + dealDt.substring(0, 8) +") and \n" +
+            getTemporalClauseSECFromSqls("sec",effTimeSql,asrtTimeSql) + 
+                   " and exists (select 1 from SECURITYINDIC.index_constituent idxc where sec.msd_security_id = idxc.index_msd_securityid and \n" + 
+                   getTemporalClauseSECFromSqls("idxc",effTimeSql,asrtTimeSql) + ") ";
+
+      String msd_securityid = null;
+      String securityid = null;
+
+      if (cmdParser.hasFlag("debug"))
+      {  getLogger().info("SQL: " + sql);
+      }
+
+      try
+      {  ResultSet rs = stOracle.executeQuery(sql);
+
+         while (rs.next())
+         {  msd_securityid = rs.getString(1).trim();
+
+            String product = rs.getString(2).trim();
+
+            securityid = rs.getString(3).trim();
+
+            Row row = new Row();
+            row.add(securityid);
+            row.add("");
+
+            String key3 = String.format("%s@%s@0", msd_securityid, 0);
+
+            if (legLookup.get(key3) != null)
+               continue;
+
+            String legalEntity = "";
+
+            row.add(runId);
+            row.add("0");
+            row.add("0");
+            row.add("");
+            row.add(""); 
+            row.add(product); 
+            row.add(""); // row.add(instr.matDt);
+            row.add("XL");
+            row.add("R");
+            row.add(product);            
+            row.add(""); // row.add(instr.coupon);
+            row.add("0");
+            row.add(""); // row.add(instr.startDt);
+            row.add("Exchange Traded");
+            row.add("Exchange Traded"); // row.add(instr.exchangeKey);
+            row.add("default");
+            row.add("USD.FEDFUND");
+            row.add(""); // row.add(instr.matDt);
+            row.add("n/a");
+            row.add("n/a");
+            row.add("unknown");
+            row.add("unknown");
+            row.add("n/a");
+            row.add(legalEntity);
+            row.add("");
+            row.add("0"); //InitExchange
+            row.add("0"); //FinalExchange
+            row.add("0"); //DayCount
+            row.add("USD"); //Currency
+            row.add("Other"); //SubProduct
+            row.add(null); //NotificationDays
+            row.add(null); //NotificationCalendar
+
+            row.add("ACT");
+
+            row.add(msd_securityid);
+            row.add(null); // why this is added ? TradeActivity ? -SQ
+
+            legLookup.put(key3, row);
+         }         
+      }
+      catch(Throwable e)
+      {
+         getLogger().error("msd_securityid: " + msd_securityid + ", securityid: " + securityid);
+
+         getLogger().error("Error getting index data",e);
+      }
+   }
+
+   void initSecurityIndic(String runId,String dealDt) throws Throwable {
+      
+	  Run runVO = getRunDAO().getRunById(run.getString("run_id"));
+      List<SecurityPosition> securityDataList = getDsLibDAO().getOfficialSecurityPositions(runVO.getRun_id());
+      if (securityDataList != null && securityDataList.size() > 0) {
+    	  for (SecurityPosition secPxData : securityDataList) {
+          	  if (secPxData.getSecurity() == null) {
+        		  continue;
+        	  }
+    		  com.citi.muni.msdc.entities.smc.Security security = secPxData.getSecurity();
+    		  String cusip=security.getSecurityXRefMap().get(XRefCode.CSP);   		  		 
+    		  
+    	      String account = secPxData.getAccountMnemonics();
+    	      String book = secPxData.getBook();
+              String notional = String.valueOf(secPxData.getQuantity().longValue());
+              String product = security.getProductType().name();
+              String id2=account;
+              
+              accountBookMap.put(account,book);
+                            
+              if(secPxData.isTotalReturnSwap()){
+            	  product=ProductType.TOTAL_RETURN_SWAP.name();
+            	  //Id2           	 
+                     id2=secPxData.getOasysId();
+                     Set<String> oasysIdset = trsCusipOasysIdMap.get(cusip);
+                     if (oasysIdset==null) {
+                    	 oasysIdset = new HashSet<String>();
+                    	 trsCusipOasysIdMap.put(cusip,oasysIdset);
+                     }
+                     oasysIdset.add(id2);
+              }
+              else{
+            	  Set<String> set = mbondCusipAccountMap.get(cusip);
+                  if (set==null) {
+                      set = new HashSet<String>();
+                      mbondCusipAccountMap.put(cusip,set);
+                  }
+                  set.add(account);
+              }
+              
+              Row row = new Row();
+              row.add(runId);
+              row.add(cusip);
+              row.add(id2);
+
+              String key3 = String.format("%s@%s@0", cusip, id2);
+
+              if (legLookup.get(key3) != null)
+                 continue;
+
+              String legalEntity = secPxData.getLegalEntity();
+
+              if (legalEntity == null)
+                 legalEntity = "";
+              else
+                 legalEntity = legalEntity.trim();
+
+              
+              row.add("0");
+              row.add("0");
+              row.add(book);
+              row.add(account); 
+              row.add(product); 
+              row.add(""); // row.add(instr.matDt);
+              row.add("XL");
+              row.add("R");
+              row.add(product);            
+              row.add(""); // row.add(instr.coupon);
+              row.add(notional);
+              row.add(""); // row.add(instr.startDt);
+              row.add("Exchange Traded");
+              row.add("Exchange Traded"); // row.add(instr.exchangeKey);
+              row.add("default");
+              row.add("USD.FEDFUND");
+              row.add(""); // row.add(instr.matDt);
+              row.add("n/a");
+              row.add("n/a");
+              row.add("unknown");
+              row.add("unknown");
+              row.add("n/a");
+              row.add(legalEntity);
+              row.add(dealDt);
+              row.add("0"); //InitExchange
+              row.add("0"); //FinalExchange
+              row.add("0"); //DayCount
+              row.add("USD"); //Currency
+              row.add("Other"); //SubProduct
+              row.add(null); //NotificationDays
+              row.add(null); //NotificationCalendar
+              row.add("ACT");
+
+              row.add("");
+              row.add(null);
+
+              legLookup.put(key3, row);
+    	  }
+      }
+      try {
+    	  
+      }
+      catch(Throwable e){
+         getLogger().error("Error getting SecurityIndic data",e);
+      }
+   }
+   
+   private void updateIncludedDealIds() {
+	   if (bondIndexDE) {
+		   if (legLookup.size() == 0) {
+		         getLogger().error("Not bond index indic available");
+		         return;
+		   }
+           for (String key : legLookup.keySet()) {
+        	   Row row = legLookup.get(key);
+        	   String msd_securityid = key.split("@")[0];
+        	   String securityid = row.get(0).toString();
+               if (includeDeals != null && includeDeals.contains(securityid)) {
+                  	includeDeals.add(msd_securityid);
+               }
+           }
+	   }
+   }
+   
+   private void initNotionalsFromDB(String runId,String dealDt, boolean add, String effTimeSql, String asrtTimeSql) {
+
+	   String sqlTradeIds = getTradeIdSql(); 
+	   String sql = 
+               "select l.unique_id1, l.unique_id2, l.leg_number, \n" +
+    		   "     (case when s.amount is not null then s.amount else l.notional end) as notional \n" +
+    		   "from RISKAPP.transact_header th \n" +
+    		   "join RISKAPP.leg l on (th.unique_id1 = l.unique_id1 and th.unique_id2 = l.unique_id2 \n" +
+    		   "     and " + getVersionTemporalClauseFromSqls("l",effTimeSql,asrtTimeSql) + 
+    		   "     and l.customized = 'Y' and l.leg_type != 'FE') \n" +
+    		   "join \n" +
+    		   "   ( select ss.unique_id1, ss.unique_id2, ss.leg_number, sum(ss.amount) as amount \n" +
+    		   "     from RISKAPP.schedule ss \n" +
+    		   "     where " + getVersionTemporalClauseFromSqls("ss",effTimeSql,asrtTimeSql) + " and ss.event = 'I' \n" +
+    		   "         and not exists \n" +
+    		   "           ( select sa.unique_id1 \n" +
+    		   "             from RISKAPP.schedule sa \n" +
+    		   "             where " + getVersionTemporalClauseFromSqls("sa",effTimeSql,asrtTimeSql) + "\n" +
+    		   "                 and sa.event = 'A' and sa.action_date <= " + dealDt.substring(0,8) + "\n" +
+    		   "                 and ss.unique_id1 = sa.unique_id1 and ss.unique_id2 = sa.unique_id2 \n" +
+    		   "                 and ss.leg_number = sa.leg_number \n" +
+    		   "           ) \n" +
+    		   "     group by ss.unique_id1, ss.unique_id2, ss.leg_number \n" +
+    		   "   ) s on (l.unique_id1 = s.unique_id1 and l.unique_id2 = s.unique_id2 and l.leg_number = s.leg_number ) \n" +
+    		   "where " + getVersionTemporalClauseFromSqls("th",effTimeSql,asrtTimeSql) + " and product_type not in ('sop', 'fpa') \n" +
+    		   "     and th.maturity_date > " + dealDt.substring(0,8) + sqlTradeIds + " \n" +
+    		   "order by l.unique_id1, l.unique_id2, l.leg_number \n";
+
+	   if (cmdParser.hasFlag("debug")) {
+		   getLogger().info("SQL/int: " + sql);
+	   }
+
+	   try {
+		   ResultSet rs = stOracle.executeQuery(sql);
+
+		   while (rs.next()) {
+			   String id1 = rs.getString(1);
+			   String id2 = rs.getString(2);
+			   String legNo = rs.getString(3);
+			   String notional =  rs.getString(4);
+			   String key3 = String.format("%s@%s@%s", id1, id2, legNo);
+			   notionalMap.put(key3, notional);
+		   }
+		   rs.close();
+	   }
+	   catch(Throwable e) {
+		   getLogger().error(sql,e);
+	   }
+
+	   sql = 
+               "select l.unique_id1, l.unique_id2, l.leg_number, \n" +
+    		   "     (case when s.amount is not null then s.amount else l.notional end) as notional \n" +
+    		   "from RISKAPP.transact_header th \n" +
+    		   "join RISKAPP.leg l on (th.unique_id1 = l.unique_id1 and th.unique_id2 = l.unique_id2 \n" +
+    		   "     and " + getVersionTemporalClauseFromSqls("l",effTimeSql,asrtTimeSql) +  " and l.leg_type != 'FE') \n" +
+    		   "left outer join \n" +
+    		   "   ( select ss.unique_id1, ss.unique_id2, ss.leg_number, ss.amount \n" +
+    		   "     from RISKAPP.schedule ss \n" +
+    		   "     join (select sm.unique_id1, sm.unique_id2, sm.leg_number, max(sm.action_date) as action_date \n" +
+    		   "         from RISKAPP.schedule sm \n" +
+    		   "         where " + getVersionTemporalClauseFromSqls("sm",effTimeSql,asrtTimeSql) + "\n" +
+    		   "             and sm.event = 'A' and sm.action_date <= " + dealDt.substring(0,8) + "\n" +
+    		   "         group by sm.unique_id1, sm.unique_id2, sm.leg_number) sd \n" +
+    		   "         on (ss.unique_id1 = sd.unique_id1 and ss.unique_id2 = sd.unique_id2 \n" +
+    		   "             and ss.leg_number = sd.leg_number and ss.action_date = sd.action_date) \n" +
+    		   "     where " + getVersionTemporalClauseFromSqls("ss",effTimeSql,asrtTimeSql) + " and ss.event = 'A' \n" +
+    		   "   ) s on (l.unique_id1 = s.unique_id1 and l.unique_id2 = s.unique_id2 and l.leg_number = s.leg_number ) \n" +
+    		   "where " + getVersionTemporalClauseFromSqls("th",effTimeSql,asrtTimeSql) + " and product_type not in ('sop', 'fpa') \n" +
+    		   "     and th.maturity_date > " + dealDt.substring(0,8) + sqlTradeIds + " \n" +
+    		   "order by l.unique_id1, l.unique_id2, l.leg_number \n";
+
+	   if (cmdParser.hasFlag("debug")) {
+		   getLogger().info("SQL/notional: " + sql);
+	   }
+
+	   try {
+		   ResultSet rs = stOracle.executeQuery(sql);
+
+		   while (rs.next()) {
+			   String id1 = rs.getString(1);
+			   String id2 = rs.getString(2);
+			   String legNo = rs.getString(3);
+			   String notional =  rs.getString(4);
+			   String key3 = String.format("%s@%s@%s", id1, id2, legNo);
+			   notionalMap.put(key3, notional);
+		   }
+		   rs.close();
+	   }
+	   catch(Throwable e) {
+		   getLogger().error(sql,e);
+	   }
+
+	   sql = 
+               "select th.unique_id1, th.unique_id2, oi.leg_number, oi.underlying_unique_id1, oi.underlying_unique_id2, l.leg_number \n" +
+    		   "from RISKAPP.transact_header th \n" +
+    		   "join RISKAPP.option_indic oi on (th.unique_id1 = oi.unique_id1 and th.unique_id2 = oi.unique_id2 \n" +
+    		   "     and " + getVersionTemporalClauseFromSqls("oi",effTimeSql,asrtTimeSql) +  ") \n" +
+    		   "join RISKAPP.leg l on (oi.underlying_unique_id1 = l.unique_id1 and oi.underlying_unique_id2 = l.unique_id2 \n" +
+    		   "     and " + getVersionTemporalClauseFromSqls("l",effTimeSql,asrtTimeSql) +  " and l.leg_type != 'FE') \n" +
+    		   "where " + getVersionTemporalClauseFromSqls("th",effTimeSql,asrtTimeSql) + " and trim(status) = 'ACT' and product_type = 'sop' \n" +
+    		   "     and th.maturity_date > " + dealDt.substring(0,8) + sqlTradeIds + " \n" +
+    		   "order by th.unique_id1, th.unique_id2, oi.leg_number \n";
+
+	   if (cmdParser.hasFlag("debug")) {
+		   getLogger().info("SQL/sop: " + sql);
+	   }
+
+	   try {
+		   ResultSet rs = stOracle.executeQuery(sql);
+
+		   while (rs.next()) {
+			   String ulId1 =  rs.getString(4);
+			   String ulId2 =  rs.getString(5);
+			   String ulLegNo = rs.getString(6);
+			   String ulKey3 = String.format("%s@%s@%s", ulId1, ulId2, ulLegNo);
+			   String ulNotional = notionalMap.get(ulKey3);
+
+			   if (ulNotional != null) {
+				   String id1 = rs.getString(1);
+				   String id2 = rs.getString(2);
+				   String legNo = rs.getString(3);
+				   String key3 = String.format("%s@%s@%s", id1, id2, legNo);
+				   String notional = notionalMap.get(key3);
+				   if (notional == null || Double.valueOf(notional) < Double.valueOf(ulNotional)) {
+					   notionalMap.put(key3, ulNotional);
+				   }
+			   }
+		   }
+		   rs.close();
+	   }
+	   catch(Throwable e) {
+		   getLogger().error(sql,e);
+	   }
+
+	   sql = 
+               "select l.unique_id1, l.unique_id2, l.leg_number, sum(fs.amount) as notional \n" +
+    		   "from RISKAPP.transact_header th \n" +
+    		   "join RISKAPP.leg l on (th.unique_id1 = l.unique_id1 and th.unique_id2 = l.unique_id2 \n" +
+    		   "     and " + getVersionTemporalClauseFromSqls("l",effTimeSql,asrtTimeSql) +  ") \n" +
+    		   "join RISKAPP.fpa_schedule fs on (l.unique_id1 = fs.unique_id1 and l.unique_id2 = fs.unique_id2 and l.leg_number = fs.leg_number \n" +
+    		   "     and " + getVersionTemporalClauseFromSqls("fs",effTimeSql,asrtTimeSql) +  " \n" +
+    		   "     and fs.delivery_date > " + dealDt.substring(0,8) + ") \n" +
+    		   "where " + getVersionTemporalClauseFromSqls("th",effTimeSql,asrtTimeSql) + " and trim(status) = 'ACT' and product_type = 'fpa' \n" +
+    		   "     and th.maturity_date > " + dealDt.substring(0,8) + sqlTradeIds + " \n" +
+    		   "group by l.unique_id1, l.unique_id2, l.leg_number \n" +
+    		   "order by l.unique_id1, l.unique_id2, l.leg_number \n";
+
+	   if (cmdParser.hasFlag("debug")) {
+		   getLogger().info("SQL/fpa: " + sql);
+	   }
+
+	   try {
+		   ResultSet rs = stOracle.executeQuery(sql);
+
+		   while (rs.next()) {
+			   String id1 = rs.getString(1);
+			   String id2 = rs.getString(2);
+			   String legNo = rs.getString(3);
+			   String notional =  rs.getString(4);
+			   String key3 = String.format("%s@%s@%s", id1, id2, legNo);
+			   notionalMap.put(key3, notional);
+		   }
+		   rs.close();
+	   }
+	   catch(Throwable e) {
+		   getLogger().error(sql,e);
+	   }
+   }
+   
+   private String getTradeIdSql() {
+	   String tradeIdSql = "";
+
+	   if (cacheIdSuffix!=null&&!"".equalsIgnoreCase(cacheIdSuffix)) {
+		   String tradeIds = this.cmdParser.getParam("t");
+		   if (tradeIds!=null&&!"".equals(tradeIds.trim())&&tradeIds.indexOf(".")>0) {
+			   String[] ids = tradeIds.split("[,]");
+			   if (ids!=null&&ids.length>0) {
+				   StringBuilder s = new StringBuilder();
+				   s.append(" and (");
+				   boolean atleast1ValidId=false, firstTime=true;
+				   for (int i=0; i< ids.length;i++) {
+					   String[] id12 = ids[i].split("[.]");
+					   if (id12!=null&&id12.length==2) {
+						   s.append((firstTime?"":" or ") + "(th.unique_id1="+id12[0] + " and th.unique_id2=" + id12[1] + ")");
+						   firstTime=false;atleast1ValidId=true;
+					   }
+				   }
+				   if (atleast1ValidId) {
+					   s.append(") ");
+					   tradeIdSql = s.toString();
+				   }
+			   }
+		   }
+	   }
+	   return tradeIdSql;
+   }
+
+   boolean skip(Row row)
+   {  if (includeTrades != null)
+      {  if ( (includeDeals.contains(row.getString(0, "")) == false) && 
+              (includeTrades.contains(row.getString(0, "") + "." + row.getString(1, "")) == false) )
+         {  
+            return(true);
+         }
+      }
+
+      if (excludeTrades != null)
+      {  if ( (excludeDeals.contains(row.getString(0, "")) == true) ||
+              (excludeTrades.contains(row.getString(0, "") + "." + row.getString(1, "")) == true) )
+         {  
+            return(true);
+         }
+      }
+
+      if (skipLeg("book", "xBook", row.getString(4, "")))
+         return(true);
+
+      if (skipLeg("account", "xAccount", row.getString(5, "")))
+         return(true);
+
+      if (skipLeg("product", "xProduct", row.getString(6, "")))
+         return(true);
+
+      if (skipLeg("legType", "xLegType", row.getString(8, "")))
+         return(true);
+
+      if (skipLeg("payRec", "xPayRec", row.getString(9, "")))
+         return(true);
+
+      if (skipLeg("indexCode", "xIndexCode", row.getString(10, "")))
+         return(true);
+
+      if (skipLeg("customerMnemonic", "xCustomerMnemonic", row.getString(15, "")))
+         return(true);
+
+      if (skipLeg("funding", "xFunding", row.getString(17, "")))
+         return(true);
+
+      if (skipLeg("legalEntity", "xLegalEntity", row.getString(24, "")))
+          return(true);
+      
+      if (skipLeg("subProduct", "xSubProduct", row.getString(30, "")))
+          return(true);
+
+      return(false);
+   }
+
+   boolean skipLeg(String include, String exclude, String value)
+   {  HashSet<String> list = filters.get(include);
+
+      if (list != null)
+      {  if (list.contains(value))
+         {  return(false);
+         }
+         else
+         {  return(true);
+         }
+      }
+
+      list = filters.get(exclude);
+
+      if (list != null)
+      {  if (list.contains(value))
+         {  return(true);
+         }
+      }
+
+      return(false);
+   }
+
+   void initComplexTrades() throws Throwable
+   {  if (cmdParser.hasFlag("complex"))
+      {  complex = new HashMap<String, String>();
+
+         ResultSet rs = stOracle.executeQuery(
+            "select group_id,value_id\n" +
+            "from riskapp.group_config\n" +
+            "where group_type='complexTrade'");
+
+         while (rs.next())
+         {  String parent = rs.getString(1).replace(".",":");
+            String child = rs.getString(2).replace(".",":");
+            complex.put(child, parent);
+         }
+      }
+   }
+
+   void doComplex(Row row, String values[])
+   {  String id1id2 = row.get(0) + ":" + row.get(1);
+
+      String parent = complex.get(id1id2);
+
+      String oasysLegNo = row.getString(3, null);
+
+      if (oasysLegNo != null)
+         row.set(2, oasysLegNo);
+
+      String product = row.getString(6, null);
+      if ((parent != null) || "cyca1".equals(product) || "sop".equals(product) || "fpa".equals(product))
+      {  String ids[];
+
+         if (parent != null)
+         {  ids = parent.split(":");
+         }
+         else
+         {  ids = new String[2];
+            ids[0] = row.get(0).toString();
+            ids[1] = row.get(1).toString();
+         }
+
+         row.set(0, ids[0]);
+         row.set(1, ids[1]);
+         row.set(2, "pseudo");
+         row.set(6, "complex");
+         row.set(8, null);
+         row.set(9, null);
+         row.set(11, null);
+
+         Column c = colLookup.get("CurrentCouponAccrualStart");
+
+         Integer pos = null;
+
+         if (c != null)
+            pos = c.position;
+
+         if ((pos != null) && (pos < values.length))
+            values[pos] = null;
+
+         pos = null;
+
+         c = colLookup.get("CurrentPaymentDate");
+
+         if (c != null)
+            pos = c.position;
+
+         if ((pos != null) && (pos < values.length))
+            values[pos] = null;
+      }
+   }
+
+   private boolean useMomentoes = true;
+   private String cacheId, cacheIdSuffix;
+    
+   public void clearCache() 
+   {  masterLookup.clear("legs",cacheId);
+   }
+
+   public void cleanup(boolean cacheFlag)
+   {  releaseDBObjects();
+      if (cacheFlag) {
+          clearCache();
+      }
+   }
+   
+   public String[] getESummaryColNames()
+   {   return eSummaryColNames;
+   }
+
+   static Logger getLogger()
+   {  return Logger.getLogger(DataExplorer.class);
+   }
+
+   private static String getVersionTemporalClauseFromSqls(String tableName, String effTimeSql, String asrtTimeSql) {
+       String s = temporalTemplateVersioned;
+       return s.replaceAll("tableName",tableName).replaceAll("bindEffTime",effTimeSql).replaceAll("bindAsrtTime",asrtTimeSql);
+   }
+   
+   private static String getTemporalClauseFromSqls(String tableName, String effTimeSql, String asrtTimeSql) {
+       String s = useVersion.contains(tableName.toLowerCase())?temporalTemplateVersioned:temporalTemplate;
+       return s.replaceAll("tableName",tableName).replaceAll("bindEffTime",effTimeSql).replaceAll("bindAsrtTime",asrtTimeSql);
+   }
+   
+   public static String getTemporalClause(String tableName, String effTime, String asrtTime) {
+       String s = useVersion.contains(tableName.toLowerCase())?temporalTemplateVersioned:temporalTemplate;
+       return s.replaceAll("tableName",tableName).replaceAll("bindEffTime",getTimeSql(effTime)).replaceAll("bindAsrtTime",getTimeSql(asrtTime));
+   }
+   public static String getVersionTemporalClause(String tableName, String effTime, String asrtTime) {
+       String s = temporalTemplateVersioned;
+       return s.replaceAll("tableName",tableName).replaceAll("bindEffTime",getTimeSql(effTime)).replaceAll("bindAsrtTime",getTimeSql(asrtTime));
+   }
+
+   private static String getTemporalClauseSECFromSqls(String tableName, String effTimeSql, String asrtTimeSql) {
+       String s = temporalTemplateSEC;
+       return s.replaceAll("tableName",tableName).replaceAll("bindEffTime",effTimeSql).replaceAll("bindAsrtTime",asrtTimeSql);
+   }
+   
+   @SuppressWarnings("unused")
+   private String getDataDir() {
+       String s = System.getenv("DATADIR");
+       if (s==null) {
+           s = System.getProperty("DATADIR");
+       }
+       return s;
+   }
+
+   public GenericVO run;
+
+   ResultSet issuesRS;
+
+   HashMap<String, HashSet<String>> filters = new HashMap<String, HashSet<String>>();
+
+   CommandLineParser cmdParser = new CommandLineParser();
+
+   Statement stOracle = null;
+
+   static Momentoes masterLookup = new Momentoes();
+
+   HashMap<String, Row> legLookup;
+
+   HashSet<String> includeTrades, excludeTrades;
+   HashSet<String> includeDeals, excludeDeals;
+   HashMap<String, Column> colLookup = new HashMap<String, Column>();
+   ArrayList<Boolean> requestedColOrder = new ArrayList<Boolean>();
+   String eSummaryColNames[];
+   LinkedHashSet<String> sColumns = new LinkedHashSet<String>();
+
+   int numGroupCols = 0;
+   int numSumCols = 1;
+   int numErrors;
+
+   String fileName;
+
+   String doubleFormat;
+   String doubleSepFormat;
+   boolean bondIndexDE = false;
+   boolean useDsLibEntity = false;
+
+   boolean allDone=false, consumed=false, startedSummaryThread=false;
+
+   HashMap<String, Row> sums = new HashMap<String, Row>();
+
+   HashMap<String, String> complex;
+
+   String lock = new String("lock");
+
+   HashMap<Integer, String> calcConfigMap;
+
+   HashMap<String, String> accountBookMap = new HashMap<String, String>();
+   HashMap<String, String> legalEntityAccountMap = new HashMap<String, String>();
+   HashMap<String, String> fundingSourceMap = new HashMap<String, String>();
+   HashMap<String, String> cpartyFundingMap = new HashMap<String, String>();
+   Map<String, String> notionalMap = new HashMap<String, String>();
+   Map<String,MuniBond> mbondPositionMap = new HashMap<String,MuniBond>();
+   Map<String,List<MuniBond>> mbondCusipPositionMap = new HashMap<String,List<MuniBond>>();
+   Map<String,Set<String>> mbondCusipAccountMap = new HashMap<String,Set<String>>();
+   Map<String,Set<String>> trsCusipOasysIdMap = new HashMap<String,Set<String>>();
+
+   LinkedHashSet<String> valueGroupIds = new LinkedHashSet<String>();
+
+   ArrayList< HashMap<String, ArrayList<Column> > > dimensions = 
+      new ArrayList< HashMap<String, ArrayList<Column> > >();
+
+   Throwable error;
+   boolean firstTime = false;
+
+   HashMap<String, ArrayList<ArrayList<String>>> tradeActivity;
+   HashMap<String, ArrayList<ArrayList<String>>> legActivity;
+   HashMap<String, String> tradeActivityStatus = new HashMap<String, String>();
+   boolean requestedTradeActivity;
+   private static String eodCutOffHH24MI = "2359",
+   temporalTemplate = " tableName.effStartTm <= bindEffTime and bindEffTime < tableName.effEndTm and tableName.asrtStartTm <= bindAsrtTime and bindAsrtTime < tableName.asrtEndTm "
+       , temporalTemplateVersioned = " tableName.version_id is null and tableName.effStartTm <= bindEffTime and bindEffTime < tableName.effEndTm and tableName.asrtStartTm <= bindAsrtTime and bindAsrtTime < tableName.asrtEndTm ";
+   private static String temporalTemplateSEC = " tableName.eff_from_dt <= bindEffTime and bindEffTime < tableName.eff_to_dt and tableName.asrt_from_dt <= bindAsrtTime and bindAsrtTime < tableName.asrt_to_dt ";
+   
+   private static Set<String> useVersion = new HashSet<String>(Arrays.asList(new String[]{"transact_header","leg","schedule","fpa_schedule","option_indic","strike"}));
+
+   HashMap<String, String> colAliases = new HashMap<String, String>();
+
+   // HashSet<String> legColumns = new HashSet<String>();
+
+   Connection conn;
+
+   static Client client = null;
+   
+   private DsLibDAO dsLibDAO = null;
+   
+   public static void main(String[] args) throws Throwable {
+       CommandLineParser cp = new CommandLineParser();
+       cp.setOptionalParam("cacheFile", null);
+       DataExplorer.initCmdLineOptions(cp);
+       if ((args.length == 1) && (args[0].contains("@")))
+           args = args[0].split("@");
+       cp.setArgs(args);
+       
+       if(cp.getParam("d")!=null)
+           cp.setOptionalParam("d", cp.getParam("d"));
+       
+       cp.validateArgs();
+       
+       DataExplorer client = new DataExplorer(cp);
+       if(cp.getParam("d")!=null) {
+           PrintWriter out = new PrintWriter(cp.getParam("d"));
+           client.print(out,true,false);
+       } else {
+           client.print();
+       }
+   }
+}
