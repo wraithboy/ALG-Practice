@@ -5,12 +5,15 @@ public class MergeSort {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		
-		int[]  A ={5,2,17,12,1,8,7};
+		int[]  A ={5,2,17,12,1,8,7,22,4,6,19};
 		int[]  B ={6,5};
-		MergeSort(A,0,6);
+		MergeSort(A,0,A.length-1);
 		//Merge(A,0,0,0);
 		
-		
+		for( int i : A)			
+		{
+			System.out.print(i);
+		}
 	}
 	
 	
@@ -21,12 +24,12 @@ public class MergeSort {
 			int q = (int)((p+r)/2);
 			MergeSort(A,p,q);
 			MergeSort(A,q+1,r);
-			System.out.print(p);
-			System.out.print(q);
-			System.out.print(r);
+			System.out.print("p: "+p+" ");
+			System.out.print("q: "+q+" ");
+			System.out.print("r: "+r+" ");
 			Merge(A,p,q,r);
 		}
-				
+	
 	}
 	
 	private static void Merge(int[] A, int p , int q, int r)
