@@ -5,12 +5,43 @@ public class FindMaxSubArray {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		int A[]={1,-5,6,8,-13,9,4,-2,-15,12,-29,11};
-		int A2[]={4,2,-5,10,-3,-7,-9,-3,5};
+		int A2[]={-4,-2,-5,-10,-3,-7,-9,-3,-5};
 		//Result rlt=	findMaxCrossingSubArray(A2,0,A2.length/2,A2.length-1);
 		
-		int[] rlt = findMaxSubArray(A2,0,A2.length-1);
+		int[] rlt = findMaxSubArray(A,0,A.length-1);
 		
-		System.out.print(rlt[0]+" "+rlt[1]+" "+rlt[2]);
+		System.out.println(rlt[0]+" "+rlt[1]+" "+rlt[2]);
+		
+		findMaxSubArrayBrute(A);
+	}
+	
+	
+	public static void findMaxSubArrayBrute(int[] A)
+	{
+		int maxSum=Integer.MIN_VALUE;
+		int sum=0;
+		int start=0;
+		int end=0;
+		
+		for ( int i=0;i<A.length;i++)
+		{
+			if(maxSum<A[i])
+				maxSum=A[i];
+			
+			sum=A[i];
+			for (int j=i+1;j<A.length;j++)
+			{
+				sum=sum+A[j];
+				if(sum>maxSum)
+				{
+					maxSum=sum;
+					start=i;
+					end=j;
+				}
+			}
+		}
+		
+		System.out.println("start"+start+" end"+end+" MaxSum:"+maxSum);
 	}
 	
 	public static int[] findMaxSubArray(int[] A,int low,int high)
