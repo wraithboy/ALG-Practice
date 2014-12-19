@@ -8,7 +8,6 @@ public class MergeSort {
 		int[]  A ={5,2,17,12,1,8,7,22,4,6,19};
 		int[]  B ={6,5};
 		MergeSort(A,0,A.length-1);
-		//Merge(A,0,0,0);
 		
 		for( int i : A)			
 		{
