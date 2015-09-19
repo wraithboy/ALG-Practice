@@ -8,8 +8,12 @@ public class KthLargestElementinArray {
 	
 	public static void main(String args[]){
 		
+		
+		int[] array={5,4,10,7,3,8};
+		
+		System.out.println(findKthLargest(array,5));
+		
 	}
-
 	
     public static int findKthLargest(int[] nums, int k) {
         
@@ -18,7 +22,7 @@ public class KthLargestElementinArray {
     
     public static int findKth(int nums[], int k, int low , int high)
     {
-    	int i=partition(nums,0,nums.length-1);
+    	int i=partition(nums,low,high);
     	
     	int rlt=-1;
     	
@@ -28,13 +32,13 @@ public class KthLargestElementinArray {
     	}
     	else if (k<i)
     	{
-    		findKth(nums,k,)
+    		rlt=findKth(nums,k,low,i-1);
     	}
     	else
     	{
-    		
+    		rlt=findKth(nums,k,i+1,high);
     	}
-    	
+    	//System.out.println(rlt);
     	return rlt;
     }
     
@@ -43,37 +47,38 @@ public class KthLargestElementinArray {
     {
     	int i=low+1;
     	int j=high;
-    	
+    	//System.out.println("i"+i+"j"+j);
     	while(true)
     	{
-    		while(nums[i]<nums[low])
+    		while(nums[i]>nums[low])
     		{
     			if(i==high)
     				break;
     			i++;
     		}
     		
-    		while(nums[j]>nums[low])
+    		while(nums[j]<nums[low])
     		{
     			if(j==low)
     				break;
-    			j++;
+    			j--;
     		}
     		
     		if(i>=j)
     			break;
     		
-    		int tmp=nums[j];
+    		int tmp=nums[i];
     		nums[i]=nums[j];
     		nums[j]=tmp;
-    		
     	}
     	
     	int t=nums[j];
     	
     	nums[j]=nums[low];
     	
-    	nums[low]=nums[j];
+    	nums[low]=t;
+    	
+    	return j;
     }
     
 }
