@@ -56,14 +56,14 @@ public class QuickSort {
 		while(true)
 		{
 		
-			while(array[i]<pivot)
+			while(array[i]>pivot)
 			{
 				if(i==high)
 					break;
 				i++;
 			}
 			
-			while(array[j]>pivot)
+			while(array[j]<pivot)
 			{
 				if(j==low)
 					break;
