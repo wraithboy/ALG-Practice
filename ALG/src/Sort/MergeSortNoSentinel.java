@@ -75,6 +75,8 @@ public class MergeSortNoSentinel {
 			}
 		}
 		
+		
+		
 		System.out.println("");
 		
 		for( int i : A)			

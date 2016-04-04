@@ -58,6 +58,9 @@ public class MyHeap {
 				k=k+1;
 			}
 			
+			if(heap[k]<heap[n])
+				break;
+			
 			int i = heap[k];
 			
 			heap[k]=heap[n];
