@@ -1,6 +1,11 @@
 package datastructure;
 
-public class Node<Key,Value> {
+public class Node<Key,Value>{
+	
+	private Key key;
+	
+	private Value value;
+	
 	public Key getKey() {
 		return key;
 	}
@@ -17,16 +22,32 @@ public class Node<Key,Value> {
 		this.value = value;
 	}
 
-	private Key key;
-	private Value value;
+	public Node<Key, Value> getRight() {
+		return right;
+	}
+
+	public void setRight(Node<Key, Value> right) {
+		this.right = right;
+	}
+
+	public Node<Key, Value> getLeft() {
+		return left;
+	}
+
+	public void setLeft(Node<Key, Value> left) {
+		this.left = left;
+	}
+
+	private Node<Key,Value> right;
 	
-	public Node<Key,Value> right;
-	public Node<Key,Value> left;
+	private Node<Key,Value> left;
 	
 	public Node(Key key, Value value)
 	{
 		this.key=key;
 		this.value=value;
 	}
+	
+	
 	
 }
