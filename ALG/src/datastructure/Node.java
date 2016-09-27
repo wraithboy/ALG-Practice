@@ -42,10 +42,21 @@ public class Node<Key,Value>{
 	
 	private Node<Key,Value> left;
 	
-	public Node(Key key, Value value)
+	private int count;
+	
+	public int getCount() {
+		return count;
+	}
+
+	public void setCount(int count) {
+		this.count = count;
+	}
+
+	public Node(Key key, Value value, int count)
 	{
 		this.key=key;
 		this.value=value;
+		this.count=count;
 	}
 	
 	

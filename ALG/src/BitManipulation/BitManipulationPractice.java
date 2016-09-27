@@ -9,7 +9,7 @@ public class BitManipulationPractice {
 	public static void main(String args[])
 	{
 		
-		int a = 256;
+		int a = 254;
 		
 		byte b = (byte)a;
 		

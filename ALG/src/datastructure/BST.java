@@ -2,6 +2,7 @@ package datastructure;
 
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.Stack;
 
 public class BST <Key extends Comparable<Key>, Value>{
 	
@@ -10,30 +11,77 @@ public class BST <Key extends Comparable<Key>, Value>{
 	 
 	 public static void main(String args[])
 	 {
-		 BST<Integer,String> btree= new BST<Integer,String>(new Node<Integer,String>(5,"TOM"));
+		 BST<Integer,String> btree= new BST<Integer,String>(new Node<Integer,String>(5,"TOM",1));
 		 
-		 btree.put(8, "MARY");
+		 btree.put(btree.root,8, "MARY");
 		 
-		 btree.put(11, "JAMES");
+		 btree.put(btree.root,11, "JAMES");
 		 
-		 btree.put(1, "JACK");
-		 
-		 btree.put(3, "SIMON");
+		 btree.put(btree.root,1, "JACK");
+		  
+		 btree.put(btree.root,3, "SIMON");
 		 
 		// btree.put(8, "RICHARD");
 		 
 		// System.out.print(btree.get(11));
 		 
 		// btree.inorder_traverse(btree.root);
-		 btree.level_order_traverse(btree.root);
+		// btree.level_order_traverse(btree.root);
 		 
 		// System.out.println(btree.findSecondLargest(btree.root));
 		 
-		 System.out.println(btree.floor(btree.root, 13));
+		// System.out.println(btree.floor(btree.root, 13));
 		 
-		 System.out.println(btree.ceiling(btree.root, 9));
+		// System.out.println(btree.ceiling(btree.root, 9));
 		 
 		// btree.reverse_inorder_traverse(btree.root);
+		 
+		   btree.inorder_traverse(btree.root);
+		   
+		   System.out.println("");
+		   
+		   btree.inorder_traverse_iterative(btree.root);
+		 
+	//	 System.out.println(btree.size(btree.root));
+		 
+	//	 System.out.println(btree.rank(btree.root,5));
+		 
+	 }
+	 
+	 public int size()
+	 {
+		 return root.getCount();
+	 }
+	 
+	 private int size(Node<Key,Value> n)
+	 {
+		 if(n==null)
+			 return 0;
+		 else
+			 return n.getCount();
+		 
+	 }
+	 
+	 public int rank(Node<Key,Value> node, Key key)
+	 {
+		 
+		 if(node==null)
+			 return 0;
+		 
+		 int cmp=node.getKey().compareTo(key);
+		 
+		 if(cmp==0)
+		 {
+			 return size(node.getLeft());
+		 }
+		 else if (cmp>0)
+		 {
+			 return rank(node.getLeft(),key);
+		 }
+		 else
+		 {
+			 return size(node.getLeft())+ 1 + rank(node.getRight(),key);
+		 }
 		 
 	 }
 	 
@@ -81,9 +129,6 @@ public class BST <Key extends Comparable<Key>, Value>{
 			 return t;
 	 }
 	 
-	 
-	 
-	 
 	 public BST (Node<Key,Value> root)
 	 {
 		 this.root=root;
@@ -101,6 +146,37 @@ public class BST <Key extends Comparable<Key>, Value>{
 		}
 		 
 	 }
+	 
+	 public void inorder_traverse_iterative(Node<Key,Value> root)
+	 {
+		 Stack<Node<Key,Value>> stack = new Stack<Node<Key,Value>>();
+		 
+		 stack.push(root);
+		 
+		 while(!stack.isEmpty())
+		 {
+			 
+			 Node<Key,Value> n = stack.peek();
+			 
+			 if(n.getLeft()!=null)
+			 {
+				 stack.push(n.getLeft());
+				 continue;
+			 }
+			 
+			 System.out.print(n.getValue());
+			 
+			 stack.remove(n);
+			 
+			 if(n.getRight()!=null)
+			 {
+				 stack.push(n.getRight());
+			 }
+			 
+		 }
+		 
+	 }
+	 
 	 
 	 public void reverse_inorder_traverse(Node<Key,Value> root)
 	 {
@@ -206,54 +282,74 @@ public class BST <Key extends Comparable<Key>, Value>{
 			 
 		 }
 		 
-		 
 	 }
 	 
-	 public void put(Key key, Value value)
+	 public Node<Key,Value> put(Node<Key,Value> node,Key key, Value value)
 	 {
-		 
-		 if(root==null)
+		 if(node==null)
 		 {
-			 root= new Node<Key,Value>(key,value);
+			 return new Node<Key,Value>(key,value,1);
 		 }
+		 
+		 int cmp=node.getKey().compareTo(key);
+		 
+		 if(cmp==0)
+			 node.setValue(value);
+		 else if(cmp>0)
+			 node.setLeft(put(node.getLeft(),key,value));
 		 else
-		 {
-			 Node<Key,Value> t=root;
-			 
-			 while(t!=null)
-			 {
-				 
-				 int cmp=t.getKey().compareTo(key);
-				 
-				 if(cmp==0)
-				 {
-					  t.setValue(value);
-				 }
-				 else if(cmp>0)
-				 {
-					 if(t.getLeft()==null)
-						 {
-						 	t.setLeft(new Node<Key,Value>(key,value));
-						 	return;
-						 }
-					 else
-						 t=t.getLeft();
-				 }
-				 else
-				 {
-					 if(t.getRight()==null)
-						 {
-						 	t.setRight(new Node<Key,Value>(key,value));
-						 	return;
-						 }
-					 else
-						 t=t.getRight();
-				 }
-			 }
-
-		 }
+			 node.setRight(put(node.getRight(),key,value));
 		 
+		 node.setCount(size(node.getRight())+size(node.getLeft())+1);
+		 
+		 return node;
 	 }
+	 
+//	 public void put(Key key, Value value)
+//	 {
+//		 
+//		 if(root==null)
+//		 {
+//			 root= new Node<Key,Value>(key,value);
+//		 }
+//		 else
+//		 {
+//			 Node<Key,Value> t=root;
+//			 
+//			 while(t!=null)
+//			 {
+//				 
+//				 int cmp=t.getKey().compareTo(key);
+//				 
+//				 if(cmp==0)
+//				 {
+//					  t.setValue(value);
+//				 }
+//				 else if(cmp>0)
+//				 {
+//					 if(t.getLeft()==null)
+//						 {
+//						 	t.setLeft(new Node<Key,Value>(key,value));
+//						 	return;
+//						 }
+//					 else
+//						 t=t.getLeft();
+//				 }
+//				 else
+//				 {
+//					 if(t.getRight()==null)
+//						 {
+//						 	t.setRight(new Node<Key,Value>(key,value));
+//						 	return;
+//						 }
+//					 else
+//						 t=t.getRight();
+//				 }
+//			 }
+//
+//		 }
+//		 
+//	 }
 	 
 	 public Value get(Key key)
 	 {
