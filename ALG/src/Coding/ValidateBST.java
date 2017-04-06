@@ -1,4 +1,4 @@
-package LeetCodeQuestions;
+package Coding;
 
 import TMCQuestions.BinaryTreeNode;
 
