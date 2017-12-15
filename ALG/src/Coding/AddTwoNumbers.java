@@ -10,48 +10,47 @@ public class AddTwoNumbers {
 		}
 		
 	    public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
-	        ListNode head=null;
-	        ListNode curr=null;
-	        int count=1;
-	        int value=0;
-	        while(l1!=null||l2!=null)
-	        {
-	            if(l1!=null && l2!=null)
-	            value=value+l1.val*count+l2.val*count;
-	            else if(l1==null)
-	            {
-	                value=value+l2.val*count;
-	            }
-	            else
-	            {
-	                value=value+l1.val*count;
-	            }
-	            if(l1!=null)
-	            l1=l1.next;
-	            if(l2!=null)
-	            l2=l2.next;
-	            count=count*10;
-	        }
+
+	        int carry=0;
+	        ListNode head=new ListNode(0);
+	        ListNode ptr=head;
+	        int val1;
+	        int val2;
 	        
-	        while(count!=1)
+	        while(l1!=null || l2!=null)
 	        {
-	            int number= value/count;
-	            ListNode node=new ListNode(number);
-	            if(head==null)
+	            if(l1==null)
 	            {
-	                head=node;
-	                curr=head;
-	            }
+	                 val1=0;
+	                 val2=l2.val;
+	                 l2=l2.next;
+	            }      
+	            else if(l2==null)
+	            {
+	                  val1=l1.val;
+	                  val2=0;
+	                  l1=l1.next;
+	            }       
 	            else
 	            {
-	                curr.next=node;
-	                curr=curr.next;
+	                val1=l1.val;
+	                val2=l2.val;
+	                l1=l1.next;
+	                l2=l2.next;
 	            }
 	            
-	            count=count/10;
+	            int sum=(val1+val2+carry)%10;
+	            ptr.next=new ListNode(sum);
+	            carry=(val1+val2+carry)/10;
+	            ptr=ptr.next;
 	        }
 	        
-	        return head;
+	        if(carry==1)
+	        {
+	            ptr.next=new ListNode(carry);
+	        }
+	        
+	        return head.next;
 	    }
 
 	

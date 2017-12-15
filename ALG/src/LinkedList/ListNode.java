@@ -1,8 +1,18 @@
 package LinkedList;
 
 public class ListNode {
-	int value;
+	int val;
 	ListNode next;
+	
+	public ListNode()
+	{
+		this.val=0;
+	}
+	
+	public ListNode(int i)
+	{
+		this.val=i;
+	}
 	
 	public static ListNode reverse (ListNode head)
 	{
@@ -79,8 +89,8 @@ public class ListNode {
 		StringBuilder sb=new StringBuilder();
 		while(cur!=null)
 		{
-			System.out.println(cur.value);
-			sb.append(cur.value);
+			System.out.println(cur.val);
+			sb.append(cur.val);
 			cur=cur.next;
 		}
 		
@@ -96,17 +106,17 @@ public class ListNode {
 		ListNode aa=new ListNode();
 		ListNode bb=new ListNode();
 		ListNode cc=new ListNode();
-		a.value =0;
+		a.val =0;
 		a.next=b;
-		b.value=3;
+		b.val=3;
 		b.next=c;
-		c.value=4;
+		c.val=4;
 		c.next=null;
-		aa.value =1;
+		aa.val =1;
 		aa.next=bb;
-		bb.value=2;
+		bb.val=2;
 		bb.next=cc;
-		cc.value=5;
+		cc.val=5;
 		cc.next=null;
 		
 //		System.out.println(ListNode.findNth(2, a).value);
@@ -124,7 +134,7 @@ public class ListNode {
 		ListNode cur=head;
 		while(l1!=null&&l2!=null)
 		{
-			if(l1.value<l2.value)
+			if(l1.val<l2.val)
 			{
 				cur.next=l1;
 				l1=l1.next;
@@ -155,7 +165,7 @@ public class ListNode {
 		
 		while(ptr!=null)
 		{
-			System.out.print(ptr.value);
+			System.out.print(ptr.val);
 			ptr=ptr.next;
 		}
 	}
@@ -209,7 +219,7 @@ public class ListNode {
     	
     	while(left!=null && right !=null)
     	{
-    		if(left.value<right.value)
+    		if(left.val<right.val)
     		{
     			cur.next=left;
     			left=left.next;
@@ -235,4 +245,129 @@ public class ListNode {
     	return head.next;
     }
 	
-}
+    public ListNode detectCycle(ListNode head) {
+    	
+    	if(head==null || head.next==null)
+    		return null;
+    	
+    	ListNode slow=head;
+    	ListNode fast=head;
+    	
+    	while(fast!=null && fast.next!=null)
+    	{
+
+    		slow=slow.next;
+    		fast=fast.next.next;
+    		
+    		if(slow==fast)
+    			break;
+    	}
+    	
+    	if(fast==null || fast.next==null)
+    		return null;
+    	
+    	int len=0;
+    	
+    	while(fast.next!=null)
+    	{
+    		slow=slow.next;
+    		fast=fast.next.next;
+    		len=len+2;
+    		if(slow==fast)
+    			break;
+    	}
+    	
+    	fast=head;
+    	slow=head;
+    	
+    	for(int i=0;i<len;i++)
+    	{
+    		fast=fast.next;
+    	}
+    	
+    	while(fast!=slow)
+    	{
+    		fast=fast.next;
+    		slow=slow.next;
+    	}
+    	
+    	return slow;
+    }
+    
+    public ListNode detectCycle2(ListNode head)
+    {
+    	if(head==null || head.next==null)
+    		return null;
+    	
+    	ListNode slow=head;
+    	ListNode fast=head;
+    	
+    	while(fast!=null && fast.next!=null)
+    	{
+    		slow=slow.next;
+    		fast=fast.next.next;
+            
+            if(slow==fast)
+    			break;
+    	}
+    	
+    	if(fast==null || fast.next==null)
+    		return null;
+    	
+        ListNode slow2=head;
+        
+        while(slow2!=slow)
+        {
+            slow=slow.next;
+            slow2=slow2.next;
+        }
+        
+        return slow;
+    }
+    
+    
+    public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
+    	
+        int carry=0;
+        ListNode head=new ListNode(0);
+        ListNode ptr=head;
+        int val1;
+        int val2;
+        
+        while(l1!=null || l2!=null)
+        {
+            if(l1==null)
+            {
+                 val1=0;
+                 val2=l2.val;
+                 l2=l2.next;
+            }      
+            else if(l2==null)
+            {
+                  val1=l1.val;
+                  val2=0;
+                  l1=l1.next;
+            }       
+            else
+            {
+                val1=l1.val;
+                val2=l2.val;
+                l1=l1.next;
+                l2=l2.next;
+            }
+            
+            int sum=(val1+val2+carry)%10;
+            ptr.next=new ListNode(sum);
+            carry=(val1+val2+carry)/10;
+            ptr=ptr.next;
+        }
+        
+        if(carry==1)
+        {
+            ptr.next=new ListNode(carry);
+        }
+        
+        return head.next;
+    }
+        
+ }
