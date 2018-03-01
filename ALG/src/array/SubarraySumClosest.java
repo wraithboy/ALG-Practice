@@ -38,6 +38,9 @@ public class SubarraySumClosest {
         {
             max=sum;
         }
+        
+        
+		return start;
 
     }
 }
