@@ -18,7 +18,7 @@ public class CoinsInALineII {
     	
     	dp[values.length-1]=values[values.length-1];
     	dp[values.length-2]=values[values.length-1]+values[values.length-2];
-    	dp[values.length-3]=
+    	dp[values.length-3]=values[values.length-1]+values[values.length-2];
     	for(int i=values.length-3;i>=0;i--)
     	{
     		dp[i]=Math.max(values[i]+Math.max(dp[i+1], dp[i+2]),values[i]+values[i+1]);
