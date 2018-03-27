@@ -46,4 +46,38 @@ public class Backpack {
 
         return max;
     }
+
+
+    public int backpack2d(int m,int[] A)
+    {
+
+        if(A==null || A.length==0 )
+        {
+            return 0;
+        }
+
+        boolean[][] dp=new boolean[A.length+1][m+1];
+
+        dp[0][0]=true;
+
+        for(int i=1;i<=A.length;i++)
+        {
+            for(int j=0;j<=m;j++)
+            {
+                dp[i][j]= (j-A[i-1]>=0 && dp[i-1][j-A[i-1]]) || dp[i-1][j];
+            }
+        }
+
+        for(int i=m;i>=0;i--)
+        {
+            if(dp[A.length-1][m])
+            {
+                return i;
+            }
+        }
+
+        return 0;
+    }
+
+
 }
