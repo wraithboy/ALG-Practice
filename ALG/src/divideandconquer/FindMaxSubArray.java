@@ -1,4 +1,4 @@
-package DivideAndConquer;
+package divideandconquer;
 
 public class FindMaxSubArray {
 	

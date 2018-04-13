@@ -1,4 +1,4 @@
-package DP;
+package dp;
 
 public class Backpack {
 
@@ -70,7 +70,7 @@ public class Backpack {
 
         for(int i=m;i>=0;i--)
         {
-            if(dp[A.length-1][m])
+            if(dp[A.length-1][i])
             {
                 return i;
             }
@@ -106,5 +106,4 @@ public class Backpack {
         return dp[A.length][m];
 
     }
-
 }
