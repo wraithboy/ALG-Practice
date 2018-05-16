@@ -11,60 +11,120 @@ Given [3,2,1,4,5], return [1,2,3,4,5] or any legal heap array.
 */
 
 public class Heapify {
+	
+	public static void main (String args[])
+	{
 		
-    public void heapify(int[] A) {
+		int[] A={45,39,32,11};
+		
+		Heapify.heapify(A);
+		
+		for(int i=0;i<A.length;i++)
+		{
+			System.out.println(A[i]);
+		}
+		
+	}
+	
+    public static void  heapify(int[] A) {
         // write your code here
     	
-    	for(int i=A.length;i>=0;i--)
+    	for(int i=A.length/2;i>=0;i--)
     	{
-    		
-    		
-    		
+    		siftdown(A,i);
     	}
     	
     }
     
-    
-    public void siftdown(int[] A,int i)
+    public static void siftdown2(int[] A, int i)
     {
-    	if(i>A.length-1)
-    		return;
-    	if(i*2+1 > A.length-1)
-    	{
-    		return;
-    	}
     	
-    	int left=Integer.MAX_VALUE;int right=Integer.MAX_VALUE;
+    	int min=i;
     	
-    	if(i*2+2>A.length-1)
+    	while(i<A.length)
     	{
-    		if(A[i]>A[i*2+1])
+    		
+    		if(2*i+1<A.length && A[2*i+1]<A[min])
     		{
-    			int tmp=A[i];
-    			A[i]=A[i*2+1];
-    			A[i*2+1]=tmp;
+    			min=2*i+1;
     		}
+    		
+    		if(2*i+2<A.length && A[2*i+2]<A[min])
+    		{
+    			min=2*i+2;
+    		}
+    		
+    		if(min==i)
+    		{
+    			break;
+    		}
+    		
+    		int tmp=A[min];
+    		A[min]=A[i];
+    		A[i]=tmp;
+    		i=min;
     	}
-    	else
+    }
+    
+    
+    public static void  siftdown(int[] A,int i)
+    {
+    	while(i<A.length)
     	{
-    		if(A[i*2+1]>A[i*2+2])
+    		
+    		if(i*2+1>A.length-1)
     		{
-        		if(A[i]>A[i*2+2])
-        		{
-        			int tmp=A[i];
-        			A[i]=A[i*2+2];
-        			A[i*2+2]=tmp;
-        		}
+    			break;
     		}
-    		else
+    		
+    		if(i*2+1<=A.length-1 && i*2+2>A.length-1)
     		{
-        		if(A[i]>A[i*2+1])
-        		{
-        			int tmp=A[i];
-        			A[i]=A[i*2+1];
-        			A[i*2+1]=tmp;
-        		}
+    			if(A[i*2+1]<A[i])
+    			{
+    				int tmp=A[i];
+    				A[i]=A[i*2+1];
+    				A[i*2+1]=tmp;
+        			i=i*2+1;
+    			}
+    			else
+    			{
+    				break;
+    			}    			
     		}
+    		
+    		if(i*2+1<A.length && i*2+2<A.length)
+    		{
+    			
+    			if(A[i*2+1]<A[i*2+2])
+    			{
+    				if(A[i]>A[i*2+1])
+    				{
+        				int tmp=A[i];
+        				A[i]=A[i*2+1];
+        				A[i*2+1]=tmp;
+        				i=i*2+1;
+    				}
+    				else
+    				{
+        				break;
+    				}
+    			}
+    			else
+    			{
+    				if(A[i]>A[i*2+2])
+    				{
+        				int tmp=A[i];
+        				A[i]=A[i*2+2];
+        				A[i*2+2]=tmp;
+        				i=i*2+2;
+    				}
+    				else
+    				{
+        				break;
+    				}
+    			}
+    		}
+    		
     	}
     	
     }
