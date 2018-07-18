@@ -2,11 +2,11 @@ package datastructure;
 
 public class ListNode
 {
-	public String value;
+	public int val;
 	public ListNode next;
 	
-	public ListNode(String args)
+	public ListNode(int args)
 	{
-		this.value=args;
+		this.val=args;
 	}
 }
