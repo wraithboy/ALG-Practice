@@ -1,4 +1,4 @@
-package sort;
+package Sort;
 
 public class QuickSort {
 	
@@ -6,9 +6,9 @@ public class QuickSort {
 	
 	public static void main(String args[])
 	{
-		int[] array={5,3,7,2,20,342,23,999,49,6};
+		//int[] array={5,3,7,2,20,342,23,999,49,6};
 		//int[] array={5,3,7,2,99,23};
-	
+		int[] array={1,2};
 		Qsort(array,0,array.length-1);
 		
 		for (int i : array)
