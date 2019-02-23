@@ -54,6 +54,7 @@ public class MinStack {
      */
     public int min() {
         // write your code here
-        min.peek();
+        return min.peek();
+
     }
 }
