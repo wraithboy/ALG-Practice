@@ -2,48 +2,81 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="6bcc2639-8955-4fb6-ab8d-2b2838f5474e" name="Default" comment="">
-      <change beforePath="" afterPath="$PROJECT_DIR$/ALG/src/BFS/SurroundedRegions.java" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/ALG/src/BFS/WordLadderII.java" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/ALG/src/BFS/WorldLadder.java" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/ALG/src/BitManipulation/Subsets.java" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/ALG/src/DFS/GenerateParentheses.java" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/ALG/src/DFS/NQueens.java" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/ALG/src/DFS/NQueensII.java" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/ALG/src/DFS/NumOfIslands.java" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/ALG/src/DFS/PalindromePartitioning.java" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/ALG/src/DFS/RestoreIPAddresses.java" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/ALG/src/DFS/SudokuSolver.java" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/ALG/src/DFS/UniquePath.java" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/ALG/src/DFS/UniquePathII.java" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/ALG/src/DFS/WordSearch.java" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/ALG/src/Tree/BinaryTreeMaximumPathSum.java" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/ALG/src/Tree/SumRootToLeafNumbers.java" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/ALG/src/divideandconquer/Pow.java" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/ALG/src/divideandconquer/Sqrt.java" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/ALG/src/permutationandcombination/Combinations.java" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/ALG/src/permutationandcombination/LetterCombinations.java" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/ALG/src/permutationandcombination/Permuations.java" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/ALG/src/permutationandcombination/PermuationsII.java" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/ALG/src/permutationandcombination/Subsets.java" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/ALG/src/permutationandcombination/SubsetsII.java" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/ALG/src/search/Search2DMatrix.java" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/ALG/src/search/SearchInsertPosition.java" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/ALG/src/search/SearchRange.java" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/ALG/src/sort/FirstMissingPositive.java" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/ALG/src/sort/InsertionSortList.java" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/ALG/src/sort/MergeKSortedLists.java" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/ALG/src/sort/MergeSortedArray.java" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/ALG/src/sort/MergeTwoSortedList.java" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/ALG/src/sort/SortColor.java" />
+      <change beforePath="" afterPath="$PROJECT_DIR$/ALG/src/CodingImplementation/AddBinary.java" />
+      <change beforePath="" afterPath="$PROJECT_DIR$/ALG/src/CodingImplementation/AddTwoNumbers.java" />
+      <change beforePath="" afterPath="$PROJECT_DIR$/ALG/src/CodingImplementation/BasicCalculator.java" />
+      <change beforePath="" afterPath="$PROJECT_DIR$/ALG/src/CodingImplementation/BuySellStock.java" />
+      <change beforePath="" afterPath="$PROJECT_DIR$/ALG/src/CodingImplementation/ClimbAStair.java" />
+      <change beforePath="" afterPath="$PROJECT_DIR$/ALG/src/CodingImplementation/ClimbStair.java" />
+      <change beforePath="" afterPath="$PROJECT_DIR$/ALG/src/CodingImplementation/CountPrime.java" />
+      <change beforePath="" afterPath="$PROJECT_DIR$/ALG/src/CodingImplementation/DivideTwoIntegers.java" />
+      <change beforePath="" afterPath="$PROJECT_DIR$/ALG/src/CodingImplementation/FindLeaveofBinaryTree.java" />
+      <change beforePath="" afterPath="$PROJECT_DIR$/ALG/src/CodingImplementation/ImplementStackusingQueues.java" />
+      <change beforePath="" afterPath="$PROJECT_DIR$/ALG/src/CodingImplementation/InsertIntervals.java" />
+      <change beforePath="" afterPath="$PROJECT_DIR$/ALG/src/CodingImplementation/KthLargestElementinArray.java" />
+      <change beforePath="" afterPath="$PROJECT_DIR$/ALG/src/CodingImplementation/LRUCache.java" />
+      <change beforePath="" afterPath="$PROJECT_DIR$/ALG/src/CodingImplementation/MergeInternals.java" />
+      <change beforePath="" afterPath="$PROJECT_DIR$/ALG/src/CodingImplementation/PalindromeLinkedList.java" />
+      <change beforePath="" afterPath="$PROJECT_DIR$/ALG/src/CodingImplementation/PalindromeNumber.java" />
+      <change beforePath="" afterPath="$PROJECT_DIR$/ALG/src/CodingImplementation/Permutation.java" />
+      <change beforePath="" afterPath="$PROJECT_DIR$/ALG/src/CodingImplementation/PermutationUnique.java" />
+      <change beforePath="" afterPath="$PROJECT_DIR$/ALG/src/CodingImplementation/RemoveDuplicatesFromSortedArray.java" />
+      <change beforePath="" afterPath="$PROJECT_DIR$/ALG/src/CodingImplementation/RemoveElement.java" />
+      <change beforePath="" afterPath="$PROJECT_DIR$/ALG/src/CodingImplementation/Remove_duplicate.java" />
+      <change beforePath="" afterPath="$PROJECT_DIR$/ALG/src/CodingImplementation/RotateArray.java" />
+      <change beforePath="" afterPath="$PROJECT_DIR$/ALG/src/CodingImplementation/SortColors.java" />
+      <change beforePath="" afterPath="$PROJECT_DIR$/ALG/src/CodingImplementation/Sqrt.java" />
+      <change beforePath="" afterPath="$PROJECT_DIR$/ALG/src/CodingImplementation/SumOfLeftLeaves.java" />
+      <change beforePath="" afterPath="$PROJECT_DIR$/ALG/src/CodingImplementation/TestRiffle.java" />
+      <change beforePath="" afterPath="$PROJECT_DIR$/ALG/src/CodingImplementation/TheCakeThief.java" />
+      <change beforePath="" afterPath="$PROJECT_DIR$/ALG/src/CodingImplementation/TrappingRainWater.java" />
+      <change beforePath="" afterPath="$PROJECT_DIR$/ALG/src/CodingImplementation/TwoSum.java" />
+      <change beforePath="" afterPath="$PROJECT_DIR$/ALG/src/CodingImplementation/ValidAnagram.java" />
+      <change beforePath="" afterPath="$PROJECT_DIR$/ALG/src/CodingImplementation/ValidPalindrome.java" />
+      <change beforePath="" afterPath="$PROJECT_DIR$/ALG/src/CodingImplementation/ValidateBST.java" />
+      <change beforePath="" afterPath="$PROJECT_DIR$/ALG/src/CodingImplementation/inplaceShuffle.java" />
+      <change beforePath="" afterPath="$PROJECT_DIR$/ALG/src/CodingImplementation/power.java" />
+      <change beforePath="" afterPath="$PROJECT_DIR$/ALG/src/graph/CloneGraph.java" />
+      <change beforePath="" afterPath="$PROJECT_DIR$/ALG/src/greedy/BuySellStockII.java" />
+      <change beforePath="" afterPath="$PROJECT_DIR$/ALG/src/greedy/JumpGame.java" />
+      <change beforePath="" afterPath="$PROJECT_DIR$/ALG/src/greedy/JumpGameII.java" />
+      <change beforePath="" afterPath="$PROJECT_DIR$/ALG/src/greedy/LongestSubStringWithoutRepeatingCharacters.java" />
+      <change beforePath="" afterPath="$PROJECT_DIR$/ALG/src/math/MultiplyStrings.java" />
+      <change beforePath="" afterPath="$PROJECT_DIR$/ALG/src/prefixsum/SubArraySumEqualsK.java" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change beforePath="$PROJECT_DIR$/ALG/src/Tree/MorrisInOrderTraversal.java" afterPath="$PROJECT_DIR$/ALG/src/Tree/MorrisInOrderTraversal.java" />
-      <change beforePath="$PROJECT_DIR$/ALG/src/Tree/PathSumII.java" afterPath="$PROJECT_DIR$/ALG/src/Tree/PathSumII.java" />
-      <change beforePath="$PROJECT_DIR$/ALG/src/Tree/PopulatingNextRightPointersInEachNode.java" afterPath="$PROJECT_DIR$/ALG/src/Tree/PopulatingNextRightPointersInEachNode.java" />
-      <change beforePath="$PROJECT_DIR$/ALG/src/datastructure/AnimalShelter.java" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/ALG/src/datastructure/FindKthNode.java" afterPath="$PROJECT_DIR$/ALG/src/datastructure/FindKthNode.java" />
-      <change beforePath="$PROJECT_DIR$/ALG/src/datastructure/FindMedianfromDataStream.java" afterPath="$PROJECT_DIR$/ALG/src/datastructure/FindMedianfromDataStream.java" />
-      <change beforePath="$PROJECT_DIR$/ALG/src/datastructure/MinStack.java" afterPath="$PROJECT_DIR$/ALG/src/datastructure/MinStack.java" />
-      <change beforePath="$PROJECT_DIR$/ALG/src/twopointer/ContainerWithMostWater.java" afterPath="$PROJECT_DIR$/ALG/src/twopointer/ContainerWithMostWater.java" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/Coding/AddBinary.java" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/Coding/AddTwoNumbers.java" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/Coding/BasicCalculator.java" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/Coding/BuySellStock.java" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/Coding/ClimbAStair.java" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/Coding/ClimbStair.java" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/Coding/CountPrime.java" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/Coding/DivideTwoIntegers.java" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/Coding/FindLeaveofBinaryTree.java" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/Coding/ImplementStackusingQueues.java" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/Coding/KthLargestElementinArray.java" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/Coding/LRUCache.java" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/Coding/PalindromeLinkedList.java" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/Coding/Permutation.java" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/Coding/PermutationUnique.java" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/Coding/RemoveDuplicatesFromSortedArray.java" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/Coding/RemoveElement.java" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/Coding/Remove_duplicate.java" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/Coding/RotateArray.java" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/Coding/SortColors.java" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/Coding/Sqrt.java" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/Coding/SumOfLeftLeaves.java" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/Coding/TestRiffle.java" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/Coding/TheCakeThief.java" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/Coding/TrappingRainWater.java" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/Coding/TwoSum.java" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/Coding/ValidAnagram.java" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/Coding/ValidPalindrome.java" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/Coding/ValidateBST.java" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/Coding/inplaceShuffle.java" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/Coding/power.java" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/array/IntersectionOfTwoArrays.java" afterPath="$PROJECT_DIR$/ALG/src/array/IntersectionOfTwoArrays.java" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/divideandconquer/Sqrt.java" afterPath="$PROJECT_DIR$/ALG/src/divideandconquer/Sqrt.java" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -59,11 +92,55 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="GenerateParentheses.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/ALG/src/DFS/GenerateParentheses.java">
+      <file leaf-file-name="CloneGraph.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/ALG/src/graph/CloneGraph.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="285">
-              <caret line="20" column="69" lean-forward="false" selection-start-line="20" selection-start-column="69" selection-end-line="20" selection-end-column="69" />
+            <state relative-caret-position="1095">
+              <caret line="73" column="29" lean-forward="false" selection-start-line="73" selection-start-column="29" selection-end-line="73" selection-end-column="29" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="UglyNumber.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/ALG/src/math/UglyNumber.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="30">
+              <caret line="2" column="13" lean-forward="false" selection-start-line="2" selection-start-column="13" selection-end-line="2" selection-end-column="13" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="PalindromeNumber.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/ALG/src/CodingImplementation/PalindromeNumber.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="390">
+              <caret line="26" column="9" lean-forward="false" selection-start-line="26" selection-start-column="9" selection-end-line="26" selection-end-column="9" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="MergeInternals.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/ALG/src/CodingImplementation/MergeInternals.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="105">
+              <caret line="7" column="13" lean-forward="false" selection-start-line="4" selection-start-column="0" selection-end-line="10" selection-end-column="1" />
+              <folding>
+                <element signature="imports" expanded="true" />
+                <element signature="e#590#591#0" expanded="true" />
+                <element signature="e#646#647#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="InsertIntervals.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/ALG/src/CodingImplementation/InsertIntervals.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="210">
+              <caret line="15" column="82" lean-forward="false" selection-start-line="15" selection-start-column="82" selection-end-line="15" selection-end-column="82" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -71,31 +148,43 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="SudokuSolver.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/ALG/src/DFS/SudokuSolver.java">
+      <file leaf-file-name="MinimumWindowSubstring.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/ALG/src/twopointer/MinimumWindowSubstring.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="30">
-              <caret line="2" column="27" lean-forward="false" selection-start-line="2" selection-start-column="27" selection-end-line="2" selection-end-column="27" />
+            <state relative-caret-position="705">
+              <caret line="47" column="22" lean-forward="false" selection-start-line="47" selection-start-column="22" selection-end-line="47" selection-end-column="22" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Pow.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/ALG/src/DivideAndConquer/Pow.java">
+      <file leaf-file-name="SubArraySumEqualsK.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/ALG/src/prefixsum/SubArraySumEqualsK.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="60">
-              <caret line="4" column="0" lean-forward="false" selection-start-line="4" selection-start-column="0" selection-end-line="30" selection-end-column="5" />
+              <caret line="4" column="13" lean-forward="false" selection-start-line="4" selection-start-column="13" selection-end-line="4" selection-end-column="13" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Sqrt.java" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/ALG/src/DivideAndConquer/Sqrt.java">
+      <file leaf-file-name="MultiplyStrings.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/ALG/src/math/MultiplyStrings.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="405">
-              <caret line="27" column="17" lean-forward="true" selection-start-line="27" selection-start-column="17" selection-end-line="27" selection-end-column="17" />
+            <state relative-caret-position="690">
+              <caret line="46" column="19" lean-forward="false" selection-start-line="46" selection-start-column="19" selection-end-line="46" selection-end-column="19" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="AddBinary.java" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/ALG/src/CodingImplementation/AddBinary.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="135">
+              <caret line="9" column="13" lean-forward="false" selection-start-line="9" selection-start-column="13" selection-end-line="9" selection-end-column="13" />
               <folding />
             </state>
           </provider>
@@ -130,17 +219,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/ALG/src/Tree/FlattenBinaryTreetoLinkedList.java" />
-        <option value="$PROJECT_DIR$/ALG/src/Tree/PopulateNextRightPointersInEachNodeII.java" />
-        <option value="$PROJECT_DIR$/ALG/src/Tree/ConstrucBSTFromPreorderAndInOrder.java" />
-        <option value="$PROJECT_DIR$/ALG/src/Tree/UniqueBinarySearchTree.java" />
-        <option value="$PROJECT_DIR$/ALG/src/Tree/UniqueBSTII.java" />
-        <option value="$PROJECT_DIR$/ALG/src/Tree/ConvertSortedArrayToBinarySearchTree.java" />
-        <option value="$PROJECT_DIR$/ALG/src/Tree/ConvertSortedListtoBinarySearchTree.java" />
-        <option value="$PROJECT_DIR$/ALG/src/Tree/MinimumDepthOfBinaryTree.java" />
-        <option value="$PROJECT_DIR$/ALG/src/Tree/MaximumDepthOfBinaryTree.java" />
-        <option value="$PROJECT_DIR$/ALG/src/Tree/PathSum.java" />
-        <option value="$PROJECT_DIR$/ALG/src/Tree/BinaryTreeMaximumPathSum.java" />
         <option value="$PROJECT_DIR$/ALG/src/Tree/PathSumII.java" />
         <option value="$PROJECT_DIR$/ALG/src/Tree/PopulatingNextRightPointersInEachNode.java" />
         <option value="$PROJECT_DIR$/ALG/src/Sort/MergeSortedArray.java" />
@@ -181,14 +259,25 @@
         <option value="$PROJECT_DIR$/ALG/src/DFS/SudokuSolver.java" />
         <option value="$PROJECT_DIR$/ALG/src/DivideAndConquer/Pow.java" />
         <option value="$PROJECT_DIR$/ALG/src/DivideAndConquer/Sqrt.java" />
+        <option value="$PROJECT_DIR$/ALG/src/greedy/JumpGame.java" />
+        <option value="$PROJECT_DIR$/ALG/src/greedy/JumpGameII.java" />
+        <option value="$PROJECT_DIR$/ALG/src/greedy/BuySellStockII.java" />
+        <option value="$PROJECT_DIR$/ALG/src/greedy/LongestSubStringWithoutRepeatingCharacters.java" />
+        <option value="$PROJECT_DIR$/ALG/src/prefixsum/SubArraySumEqualsK.java" />
+        <option value="$PROJECT_DIR$/ALG/src/array/IntersectionOfTwoArrays.java" />
+        <option value="$PROJECT_DIR$/ALG/src/graph/CloneGraph.java" />
+        <option value="$PROJECT_DIR$/ALG/src/Coding/PalindromeNumber.java" />
+        <option value="$PROJECT_DIR$/ALG/src/Coding/MergeInternals.java" />
+        <option value="$PROJECT_DIR$/ALG/src/Coding/InsertIntervals.java" />
+        <option value="$PROJECT_DIR$/ALG/src/math/MultiplyStrings.java" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="23" />
-    <option name="y" value="42" />
-    <option name="width" value="1523" />
-    <option name="height" value="1147" />
+    <option name="x" value="328" />
+    <option name="y" value="45" />
+    <option name="width" value="1903" />
+    <option name="height" value="1286" />
   </component>
   <component name="ProjectView">
     <navigator currentView="PackagesPane" proportions="" version="1">
@@ -206,6 +295,32 @@
     </navigator>
     <panes>
       <pane id="Scratches" />
+      <pane id="PackagesPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="ALG-Practice" type="58d84e3e:PackageViewProjectNode" />
+              <item name="ALG-Practice" type="616d4139:PackageViewModuleNode" />
+            </path>
+            <path>
+              <item name="ALG-Practice" type="58d84e3e:PackageViewProjectNode" />
+              <item name="ALG-Practice" type="616d4139:PackageViewModuleNode" />
+              <item name="CodingImplementation" type="1f31426a:PackageElementNode" />
+            </path>
+            <path>
+              <item name="ALG-Practice" type="58d84e3e:PackageViewProjectNode" />
+              <item name="ALG-Practice" type="616d4139:PackageViewModuleNode" />
+              <item name="math" type="1f31426a:PackageElementNode" />
+            </path>
+            <path>
+              <item name="ALG-Practice" type="58d84e3e:PackageViewProjectNode" />
+              <item name="ALG-Practice" type="616d4139:PackageViewModuleNode" />
+              <item name="prefixsum" type="1f31426a:PackageElementNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
       <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
@@ -244,17 +359,6 @@
         </subPane>
       </pane>
       <pane id="AndroidView" />
-      <pane id="PackagesPane">
-        <subPane>
-          <expand>
-            <path>
-              <item name="ALG-Practice" type="58d84e3e:PackageViewProjectNode" />
-              <item name="ALG-Practice" type="616d4139:PackageViewModuleNode" />
-            </path>
-          </expand>
-          <select />
-        </subPane>
-      </pane>
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -262,7 +366,7 @@
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2" />
     <property name="settings.editor.selected.configurable" value="vcs.Git" />
-    <property name="SearchEverywhereHistoryKey" value="&#9;FILE&#9;file:///Users/huangweidong/IdeaProjects/ALG-Practice/ALG/src/BFS/WordLadderII.java" />
+    <property name="SearchEverywhereHistoryKey" value="&#9;FILE&#9;file:///Users/huangweidong/IdeaProjects/ALG-Practice/ALG/src/DivideAndConquer/Sqrt.java" />
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -276,7 +380,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Application.WordLadderII">
+  <component name="RunManager" selected="Application.SubArraySumEqualsK">
     <configuration default="true" type="Applet" factoryName="Applet">
       <option name="HTML_USED" value="false" />
       <option name="WIDTH" value="400" />
@@ -330,6 +434,25 @@
         </pattern>
       </extension>
       <option name="MAIN_CLASS_NAME" value="sort.QuickSort" />
+      <option name="VM_PARAMETERS" />
+      <option name="PROGRAM_PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="ENABLE_SWING_INSPECTOR" value="false" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <module name="ALG-Practice" />
+      <envs />
+    </configuration>
+    <configuration name="SubArraySumEqualsK" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
+        <pattern>
+          <option name="PATTERN" value="prefixsum.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="MAIN_CLASS_NAME" value="prefixsum.SubArraySumEqualsK" />
       <option name="VM_PARAMETERS" />
       <option name="PROGRAM_PARAMETERS" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
@@ -453,19 +576,21 @@
       <option name="PROGRAM_PARAMETERS" />
       <predefined_log_file id="idea.log" enabled="true" />
     </configuration>
-    <list size="5">
+    <list size="6">
       <item index="0" class="java.lang.String" itemvalue="Application.QuickSort (1)" />
       <item index="1" class="java.lang.String" itemvalue="Application.QuickSort" />
       <item index="2" class="java.lang.String" itemvalue="Application.FirstMissingPositive" />
       <item index="3" class="java.lang.String" itemvalue="Application.Subsets" />
       <item index="4" class="java.lang.String" itemvalue="Application.WordLadderII" />
+      <item index="5" class="java.lang.String" itemvalue="Application.SubArraySumEqualsK" />
     </list>
     <recent_temporary>
-      <list size="4">
-        <item index="0" class="java.lang.String" itemvalue="Application.WordLadderII" />
-        <item index="1" class="java.lang.String" itemvalue="Application.Subsets" />
-        <item index="2" class="java.lang.String" itemvalue="Application.FirstMissingPositive" />
-        <item index="3" class="java.lang.String" itemvalue="Application.QuickSort" />
+      <list size="5">
+        <item index="0" class="java.lang.String" itemvalue="Application.SubArraySumEqualsK" />
+        <item index="1" class="java.lang.String" itemvalue="Application.WordLadderII" />
+        <item index="2" class="java.lang.String" itemvalue="Application.Subsets" />
+        <item index="3" class="java.lang.String" itemvalue="Application.FirstMissingPositive" />
+        <item index="4" class="java.lang.String" itemvalue="Application.QuickSort" />
       </list>
     </recent_temporary>
   </component>
@@ -486,7 +611,8 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="23" y="42" width="1523" height="1147" extended-state="0" />
+    <frame x="328" y="45" width="1903" height="1286" extended-state="0" />
+    <editor active="true" />
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -495,12 +621,12 @@
       <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.58762884" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33860466" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.1910871" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2160129" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.2496318" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -553,104 +679,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/ALG/src/Tree/MaximumDepthOfBinaryTree.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="240">
-          <caret line="16" column="0" lean-forward="true" selection-start-line="16" selection-start-column="0" selection-end-line="16" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ALG/src/Tree/PathSum.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="225">
-          <caret line="15" column="0" lean-forward="true" selection-start-line="15" selection-start-column="0" selection-end-line="15" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ALG/src/Tree/BinaryTreeMaximumPathSum.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="360">
-          <caret line="24" column="41" lean-forward="false" selection-start-line="24" selection-start-column="41" selection-end-line="24" selection-end-column="41" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ALG/src/Tree/PathSumII.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="150">
-          <caret line="10" column="22" lean-forward="false" selection-start-line="10" selection-start-column="22" selection-end-line="10" selection-end-column="22" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ALG/src/Tree/LevelOrderTraversal.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="60">
-          <caret line="8" column="13" lean-forward="false" selection-start-line="8" selection-start-column="13" selection-end-line="8" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ALG/src/Tree/PopulatingNextRightPointersInEachNode.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="26" column="1" lean-forward="false" selection-start-line="26" selection-start-column="1" selection-end-line="26" selection-end-column="1" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ALG/src/Sort/MergeSortedArray.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="315">
-          <caret line="21" column="9" lean-forward="false" selection-start-line="21" selection-start-column="9" selection-end-line="21" selection-end-column="9" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ALG/src/Sort/MergeTwoSortedList.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="300">
-          <caret line="20" column="42" lean-forward="false" selection-start-line="20" selection-start-column="42" selection-end-line="20" selection-end-column="42" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ALG/src/Sort/MergeKSortedLists.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="960">
-          <caret line="66" column="5" lean-forward="false" selection-start-line="66" selection-start-column="5" selection-end-line="66" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ALG/src/datastructure/MyHeap.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="30">
-          <caret line="2" column="13" lean-forward="false" selection-start-line="2" selection-start-column="13" selection-end-line="2" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ALG/src/Sort/InsertionSortList.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="630">
-          <caret line="42" column="29" lean-forward="true" selection-start-line="42" selection-start-column="29" selection-end-line="42" selection-end-column="29" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ALG/src/datastructure/FindMedianfromDataStream.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ALG/src/datastructure/Heapify.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-30">
-          <caret line="12" column="13" lean-forward="false" selection-start-line="12" selection-start-column="13" selection-end-line="12" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ALG/src/datastructure/FindKthNode.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="60">
-          <caret line="4" column="4" lean-forward="true" selection-start-line="4" selection-start-column="4" selection-end-line="4" selection-end-column="4" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/ALG/src/Tree/SumRootToLeafNumbers.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="120">
@@ -779,13 +807,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/ALG/src/array/IntersectionOfTwoArrays.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="45">
-          <caret line="3" column="16" lean-forward="false" selection-start-line="3" selection-start-column="0" selection-end-line="4" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/ALG/src/BFS/WorldLadder.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -867,9 +888,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="615">
           <caret line="41" column="1" lean-forward="false" selection-start-line="41" selection-start-column="1" selection-end-line="41" selection-end-column="1" />
-          <folding>
-            <element signature="imports" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -877,9 +895,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="285">
           <caret line="20" column="69" lean-forward="false" selection-start-line="20" selection-start-column="69" selection-end-line="20" selection-end-column="69" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -887,7 +902,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="30">
           <caret line="2" column="27" lean-forward="false" selection-start-line="2" selection-start-column="27" selection-end-line="2" selection-end-column="27" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -895,14 +909,134 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="60">
           <caret line="4" column="0" lean-forward="false" selection-start-line="4" selection-start-column="0" selection-end-line="30" selection-end-column="5" />
-          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/ALG/src/DivideAndConquer/Sqrt.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="405">
-          <caret line="27" column="17" lean-forward="true" selection-start-line="27" selection-start-column="17" selection-end-line="27" selection-end-column="17" />
+        <state relative-caret-position="435">
+          <caret line="29" column="0" lean-forward="false" selection-start-line="29" selection-start-column="0" selection-end-line="29" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ALG/src/greedy/JumpGame.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="570">
+          <caret line="38" column="20" lean-forward="false" selection-start-line="38" selection-start-column="20" selection-end-line="38" selection-end-column="20" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ALG/src/greedy/JumpGameII.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="180">
+          <caret line="12" column="19" lean-forward="true" selection-start-line="12" selection-start-column="19" selection-end-line="12" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ALG/src/greedy/BuySellStockII.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="450">
+          <caret line="30" column="5" lean-forward="true" selection-start-line="30" selection-start-column="5" selection-end-line="30" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ALG/src/greedy/LongestSubStringWithoutRepeatingCharacters.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="195">
+          <caret line="13" column="29" lean-forward="true" selection-start-line="13" selection-start-column="29" selection-end-line="13" selection-end-column="29" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ALG/src/array/MaximumSubArray.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="30">
+          <caret line="2" column="13" lean-forward="false" selection-start-line="2" selection-start-column="13" selection-end-line="2" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ALG/src/array/IntersectionOfTwoArrays.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="585">
+          <caret line="39" column="29" lean-forward="true" selection-start-line="39" selection-start-column="29" selection-end-line="39" selection-end-column="29" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ALG/src/graph/CloneGraph.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1095">
+          <caret line="73" column="29" lean-forward="false" selection-start-line="73" selection-start-column="29" selection-end-line="73" selection-end-column="29" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ALG/src/math/UglyNumber.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="30">
+          <caret line="2" column="13" lean-forward="false" selection-start-line="2" selection-start-column="13" selection-end-line="2" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ALG/src/CodingImplementation/MergeInternals.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="105">
+          <caret line="7" column="13" lean-forward="false" selection-start-line="4" selection-start-column="0" selection-end-line="10" selection-end-column="1" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#590#591#0" expanded="true" />
+            <element signature="e#646#647#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ALG/src/CodingImplementation/InsertIntervals.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="210">
+          <caret line="15" column="82" lean-forward="false" selection-start-line="15" selection-start-column="82" selection-end-line="15" selection-end-column="82" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ALG/src/CodingImplementation/PalindromeNumber.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="390">
+          <caret line="26" column="9" lean-forward="false" selection-start-line="26" selection-start-column="9" selection-end-line="26" selection-end-column="9" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ALG/src/twopointer/MinimumWindowSubstring.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="705">
+          <caret line="47" column="22" lean-forward="false" selection-start-line="47" selection-start-column="22" selection-end-line="47" selection-end-column="22" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ALG/src/prefixsum/SubArraySumEqualsK.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="60">
+          <caret line="4" column="13" lean-forward="false" selection-start-line="4" selection-start-column="13" selection-end-line="4" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ALG/src/math/MultiplyStrings.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="690">
+          <caret line="46" column="19" lean-forward="false" selection-start-line="46" selection-start-column="19" selection-end-line="46" selection-end-column="19" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ALG/src/CodingImplementation/AddBinary.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="135">
+          <caret line="9" column="13" lean-forward="false" selection-start-line="9" selection-start-column="13" selection-end-line="9" selection-end-column="13" />
           <folding />
         </state>
       </provider>
