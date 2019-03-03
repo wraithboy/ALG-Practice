@@ -43,8 +43,6 @@ public class MultiplyStrings {
         if(num1.equals("0") || num2.equals("0"))
         return "0";
 
-        LinkedList<Integer> l = new ArrayList<>();
-        l.getLast()
         return tlt.toString();
     }
 }

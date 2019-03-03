@@ -1,6 +1,8 @@
 package CodingImplementation;
 
+import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.LinkedList;
 
 /**
  * Created by h.dong on 4/6/2017.
@@ -29,141 +31,97 @@ import java.util.Hashtable;
 //        cache.get(4);      \ // returns 4
 
 
+
 public class LRUCache {
 
-    private int capacity;
+    HashMap<Integer,DLinkedNode> cache;
+    int capacity=0;
+    DLinkedNode head;
+    DLinkedNode tail;
 
-    private Hashtable<Integer,DlinkedListNode> cache;
-
-    private DlinkedList dlist;
-
-    public LRUCache(int capacity) {
+    public LRUCache(int capacity){
         this.capacity=capacity;
+        cache=new HashMap<>(capacity);
+        head= new DLinkedNode();
+        tail= new DLinkedNode();
 
-        cache=new Hashtable<Integer,DlinkedListNode>(capacity);
+        tail.next=head;
+        head.prev=tail;
+    }
 
-        dlist=new DlinkedList();
+    private void addNode(DLinkedNode n)
+    {
+        n.prev=tail;
+        n.next=tail.next;
 
+        tail.next.prev=n;
+        tail.next=n;
+    }
+
+    private void removeNode(DLinkedNode node)
+    {
+        node.prev.next = node.next;
+        node.next.prev = node.prev;
+    }
+
+    private void moveToTail(DLinkedNode n)
+    {
+        removeNode(n);
+        addNode(n);
+    }
+
+    private DLinkedNode popHead()
+    {
+        DLinkedNode n = head.prev;
+        removeNode(n);
+        return n;
+    }
+
+
+
+    class DLinkedNode {
+        int key;
+        int value;
+        DLinkedNode prev;
+        DLinkedNode next;
     }
 
     public int get(int key) {
 
-        int n;
-
-        DlinkedListNode rlt=cache.get(key);
-
-        if(rlt!=null)
+        if(cache.containsKey(key))
         {
-            n=rlt.getValue();
-            dlist.remove(rlt);
-            dlist.addToTail(rlt);
-        }else
+            moveToTail(cache.get(key));
+            return cache.get(key).value;
+        }
+        else
         {
             return -1;
         }
 
-        return n;
     }
 
     public void put(int key, int value) {
 
-        DlinkedListNode n=new DlinkedListNode(value);
-
-        if(dlist.size<capacity)
+        if(cache.containsKey(key))
         {
-            cache.put(key,n);
-            dlist.addToTail(n);
+            DLinkedNode node= cache.get(key);
+            node.value=value;
+            moveToTail(node);
         }
         else
         {
-            DlinkedListNode m=dlist.head;
-            cache.remove(m);
-            dlist.remove(m);
-            cache.put(key,n);
-            dlist.addToTail(n);
+            DLinkedNode newNode = new DLinkedNode();
+            newNode.key=key;
+            newNode.value=value;
+            if(cache.size()==capacity) {
+                DLinkedNode victim = popHead();
+                cache.remove(victim.key);
+                removeNode(victim);
+            }
+
+            cache.put(key,newNode);
+            addNode(newNode);
         }
-    }
-}
-
-class DlinkedList {
-
-    DlinkedListNode head=null;
-    DlinkedListNode tail=null;
-
-    public int size=0;
-
-    public void addToTail(DlinkedListNode n)
-    {
-        if(head==null && tail==null)
-        {
-            head=n;
-            tail=n;
-        }
-        else
-        {
-            n.next=tail;
-            tail.prev=n;
-            tail=n;
-            tail.prev=null;
-        }
-
-        size++;
-    }
-
-    public void remove(DlinkedListNode k)
-    {
-          if(size<=0)
-          {
-              return;
-          }
-          else{
-
-              if(k.prev==null)
-              {
-                  tail=k.next;
-                  k.next=null;
-              }else if(k.next==null)
-              {
-                  head=k.prev;
-                  k.prev=null;
-              }
-              else {
-                  k.prev.next = k.next;
-                  k.prev = null;
-                  k.next = null;
-              }
-          }
-        size--;
-    }
-
-
-}
-
-class DlinkedListNode {
-
-    DlinkedListNode prev=null;
-
-    public DlinkedListNode(int value) {
-        this.value = value;
-    }
-
-    DlinkedListNode next=null;
-    int value;
-
-    public DlinkedListNode getNext() {
-        return next;
-    }
-
-    public void setNext(DlinkedListNode next) {
-        this.next = next;
-    }
-
-    public int getValue() {
-        return value;
-    }
-
-    public void setValue(int value) {
-        this.value = value;
     }
 
 }
