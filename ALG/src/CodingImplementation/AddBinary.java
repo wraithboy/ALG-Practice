@@ -15,76 +15,29 @@ public class AddBinary {
 	}
 	
     public String addBinary(String a, String b) {
-        
-        int carry=0;
-        
-        char[] aa=a.toCharArray();
-        char[] bb=b.toCharArray();
-        
-        String sb="";
-        
-        int m=0;
-        
-        if(aa.length>bb.length)
-        {
-        	
-        	int i=aa.length-1;
-        	int j=bb.length-1;
-        	
-	        	while(i>=0)
-	        	{
-	        		if(j>=0)
-	        		{
-	        			m=(carry+aa[i]-48+bb[j]-48)%2;
-	        			carry=(carry+aa[i]-48+bb[j]-48)/2;
-	        		}
-	        		else
-	        		{
-	        			m=(carry+aa[i]-48)%2;
-	        			carry=(carry+aa[i]-48)/2;
-	        		}
-	        		
-	        		i--;
-	        		j--;
-	        		
-	        		sb=String.valueOf(m)+sb;
-	        	 }
-        	
-        	
-        }
-        else
-        {
-        	int i=aa.length-1;
-        	int j=bb.length-1;
-        	
-	        	while(j>=0)
-	        	{
-	        		if(i>=0)
-	        		{
-	        			m=(carry+aa[i]-48+bb[j]-48)%2;
-	        			carry=(carry+aa[i]-48+bb[j]-48)/2;
-	        		}
-	        		else
-	        		{
-	        			m=(carry+bb[j]-48)%2;
-	        			carry=(carry+bb[j]-48)/2;
-	        		}
-	        		
-	        		i--;
-	        		j--;
-	        		
-	        	   sb=String.valueOf(m)+sb;
-	        	 }
-	        	
 
-        }
-        
-        if(carry!=0)
-        {
-        	sb=String.valueOf(carry)+sb;
-        }
-        
-        return sb;
+		StringBuilder result=new StringBuilder();
+
+		int i=a.length()-1;
+		int j=b.length()-1;
+		int carry=0;
+
+		while(i>=0 || j>=0)
+		{
+			int sum=carry;
+			if(i>=0) sum=sum+a.charAt(i)-'0';
+			if(j>=0) sum=sum+a.charAt(j)-'0';
+			carry=sum/2;
+			result.append(sum%2);
+		}
+
+		if(carry!=0)
+		{
+			result.append(carry);
+		}
+
+		return result.reverse().toString();
+
     }
 
 }

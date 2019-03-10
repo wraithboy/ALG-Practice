@@ -24,7 +24,6 @@ public class SubArraySumEqualsK {
 
         for(int i=0;i<nums.length;i++)
         {
-
             prefixSum=prefixSum+nums[i];
 
             if(map.containsKey(prefixSum-k))

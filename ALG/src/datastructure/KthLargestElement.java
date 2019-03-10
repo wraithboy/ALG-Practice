@@ -11,60 +11,44 @@ public class KthLargestElement {
         if(nums==null || nums.length==0 || k<=0 || k>nums.length )
             return 0;
 
-        int pivot;
-        int start=0;
-        int end=nums.length-1;
-
+        int start=0,end=nums.length-1;
         while(true)
         {
-            pivot=partition(nums,start,end);
+            int index=partition(nums,start,end);
 
-            if(pivot+1==k)
+            if(index==k-1)
             {
-                break;
+                return nums[index];
             }
-            else if(pivot+1<k)
+            else if (index>k-1)
             {
-                start=pivot+1;
+                end=index-1;
             }
             else
             {
-                end=pivot-1;
+                start=index+1;
             }
-
         }
-
-        return nums[pivot];
 
     }
 
     private int partition(int[] nums,int start,int end)
     {
 
-        int pivot=start;
+        int pivot = end;
 
-        while(start<=end)
+        while(start<end)
         {
-            while(start<=end && nums[start]>=nums[pivot])
+            while(nums[start]>pivot) start++;
+            while(nums[end]<pivot) end--;
+
+            if(start<end)
             {
-                start++;
+                swap(nums,start,end);
             }
-
-            while(start<=end && nums[end]<nums[pivot])
-            {
-                end--;
-            }
-
-            if(start>end)
-                break;
-
-            swap(nums,start,end);
-
         }
 
-        swap(nums,end,pivot);
-
-        return end;
+        return start;
     }
 
     private void swap(int[] nums,int i, int j)
