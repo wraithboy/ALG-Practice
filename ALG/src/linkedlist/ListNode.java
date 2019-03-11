@@ -126,7 +126,7 @@ public class ListNode {
 		printList(mergeSort(aa));
 	}
 	
-	//merge two sorted LinkedList 
+	//merge two sorted linkedList
 	public static ListNode mergeTwoLists(ListNode l1,ListNode l2)
 	{
 		

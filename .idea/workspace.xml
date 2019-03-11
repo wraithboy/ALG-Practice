@@ -2,35 +2,124 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="6bcc2639-8955-4fb6-ab8d-2b2838f5474e" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/ALG/src/CodingImplementation/AddStrings.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ALG/src/CodingImplementation/FindAllAnagrams.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ALG/src/CodingImplementation/Reader4.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ALG/src/CodingImplementation/VerifyingAnAlienDictionary.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ALG/src/DFS/ExpressionAddOperators.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ALG/src/DFS/TargetSum.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ALG/src/Tree/BSTIterator.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ALG/src/Tree/BinaryTreeVerticalOrderTraversal.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ALG/src/Tree/ConvertBSTtoSortedDoublyLinkedList.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ALG/src/Tree/DiameterOfBinaryTree.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ALG/src/Tree/InorderSuccessorBST.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ALG/src/Tree/LowestCommonAncestor.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ALG/src/Tree/LowestCommonAncestorBST.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ALG/src/Tree/SerializeAndDeserializeBinaryTree.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ALG/src/Tree/Trie.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ALG/src/Tree/WordDictionary.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ALG/src/array/FruitIntoBasket.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ALG/src/array/NextPermutation.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ALG/src/array/ProductOfArrayExceptSelf.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ALG/src/array/TaskScheduler.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ALG/src/graph/IsBipartite.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ALG/src/prefixsum/ContinuousSubarraySum.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ALG/src/dfs/DecodeWays.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ALG/src/dfs/WordBreak.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ALG/src/divdieandconquer/FindMaxSubArray.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ALG/src/divdieandconquer/Pow.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ALG/src/divdieandconquer/Sqrt.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ALG/src/divdieandconquer/SquareMatrixMultiply.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ALG/src/implementation/Flatten2DVector.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ALG/src/linkedList/ReorderList.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ALG/src/stack/ExclusiveTimeOfFunctions.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ALG/src/CodingImplementation/AddBinary.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/CodingImplementation/AddBinary.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ALG/src/CodingImplementation/AddTwoNumbers.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/CodingImplementation/AddTwoNumbers.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ALG/src/CodingImplementation/MergeInternals.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/CodingImplementation/MergeInternals.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ALG/src/array/MeetingRoomII.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/array/MeetingRoomII.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ALG/src/datastructure/KthLargestElement.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/datastructure/KthLargestElement.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ALG/src/prefixsum/SubArraySumEqualsK.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/prefixsum/SubArraySumEqualsK.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/BFS/SurroundedRegions.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/bfs/SurroundedRegions.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/BFS/WordLadderII.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/bfs/WordLadderII.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/BFS/WorldLadder.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/bfs/WorldLadder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/BitManipulation/BitManipulationPractice.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/bitmanipulation/BitManipulationPractice.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/BitManipulation/Subsets.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/bitmanipulation/Subsets.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/CodingImplementation/AddBinary.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/implementation/AddBinary.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/CodingImplementation/AddStrings.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/implementation/AddStrings.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/CodingImplementation/AddTwoNumbers.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/implementation/AddTwoNumbers.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/CodingImplementation/BasicCalculator.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/implementation/BasicCalculator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/CodingImplementation/BuySellStock.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/implementation/BuySellStock.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/CodingImplementation/ClimbAStair.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/implementation/ClimbAStair.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/CodingImplementation/ClimbStair.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/implementation/ClimbStair.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/CodingImplementation/CountPrime.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/implementation/CountPrime.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/CodingImplementation/DivideTwoIntegers.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/implementation/DivideTwoIntegers.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/CodingImplementation/FindAllAnagrams.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/implementation/FindAllAnagrams.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/CodingImplementation/FindLeaveofBinaryTree.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/implementation/FindLeaveofBinaryTree.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/CodingImplementation/ImplementStackusingQueues.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/implementation/ImplementStackusingQueues.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/CodingImplementation/InsertIntervals.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/implementation/InsertIntervals.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/CodingImplementation/KthLargestElementinArray.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/implementation/KthLargestElementinArray.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/CodingImplementation/LRUCache.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/implementation/LRUCache.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/CodingImplementation/MatrixSpiral.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/implementation/MatrixSpiral.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/CodingImplementation/MergeInternals.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/implementation/MergeInternals.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/CodingImplementation/PalindromeLinkedList.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/implementation/PalindromeLinkedList.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/CodingImplementation/PalindromeNumber.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/implementation/PalindromeNumber.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/CodingImplementation/Permutation.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/implementation/Permutation.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/CodingImplementation/PermutationUnique.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/implementation/PermutationUnique.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/CodingImplementation/Reader4.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/implementation/Reader4.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/CodingImplementation/RemoveDuplicatesFromSortedArray.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/implementation/RemoveDuplicatesFromSortedArray.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/CodingImplementation/RemoveElement.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/implementation/RemoveElement.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/CodingImplementation/Remove_duplicate.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/implementation/Remove_duplicate.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/CodingImplementation/RotateArray.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/implementation/RotateArray.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/CodingImplementation/SortColors.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/implementation/SortColors.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/CodingImplementation/Sqrt.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/implementation/Sqrt.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/CodingImplementation/SumOfLeftLeaves.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/implementation/SumOfLeftLeaves.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/CodingImplementation/TestRiffle.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/implementation/TestRiffle.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/CodingImplementation/TheCakeThief.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/implementation/TheCakeThief.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/CodingImplementation/TrappingRainWater.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/implementation/TrappingRainWater.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/CodingImplementation/TwoSum.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/implementation/TwoSum.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/CodingImplementation/ValidAnagram.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/implementation/ValidAnagram.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/CodingImplementation/ValidPalindrome.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/implementation/ValidPalindrome.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/CodingImplementation/ValidateBST.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/implementation/ValidateBST.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/CodingImplementation/VerifyingAnAlienDictionary.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/implementation/VerifyingAnAlienDictionary.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/CodingImplementation/inplaceShuffle.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/implementation/inplaceShuffle.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/CodingImplementation/numberToWords.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/implementation/numberToWords.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/CodingImplementation/power.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/implementation/power.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/DFS/ExpressionAddOperators.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/dfs/ExpressionAddOperators.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/DFS/GenerateParentheses.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/dfs/GenerateParentheses.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/DFS/NQueens.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/dfs/NQueens.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/DFS/NQueensII.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/dfs/NQueensII.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/DFS/NumOfIslands.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/dfs/NumOfIslands.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/DFS/PalindromePartitioning.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/dfs/PalindromePartitioning.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/DFS/RemoveInvalidParenthesis.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/dfs/RemoveInvalidParenthesis.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/DFS/RestoreIPAddresses.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/dfs/RestoreIPAddresses.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/DFS/SudokuSolver.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/dfs/SudokuSolver.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/DFS/TargetSum.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/dfs/TargetSum.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/DFS/UniquePath.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/dfs/UniquePath.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/DFS/UniquePathII.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/dfs/UniquePathII.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/DFS/WordSearch.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/dfs/WordSearch.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/LinkedList/ListNode.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/linkedList/ListNode.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/LinkedList/MergeKSortedLists.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/linkedList/MergeKSortedLists.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/LinkedList/PartitionArray.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/linkedList/PartitionArray.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/Tree/BSTIterator.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/tree/BSTIterator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/Tree/BalancedBinaryTree.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/tree/BalancedBinaryTree.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/Tree/BinaryTreeMaximumPathSum.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/tree/BinaryTreeMaximumPathSum.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/Tree/BinaryTreeVerticalOrderTraversal.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/tree/BinaryTreeVerticalOrderTraversal.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/Tree/ConstrucBSTFromPreorderAndInOrder.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/tree/ConstrucBSTFromPreorderAndInOrder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/Tree/ConvertBSTtoSortedDoublyLinkedList.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/tree/ConvertBSTtoSortedDoublyLinkedList.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/Tree/ConvertSortedArrayToBinarySearchTree.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/tree/ConvertSortedArrayToBinarySearchTree.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/Tree/ConvertSortedListtoBinarySearchTree.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/tree/ConvertSortedListtoBinarySearchTree.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/Tree/DiameterOfBinaryTree.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/tree/DiameterOfBinaryTree.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/Tree/FlattenBinaryToLinkedList.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/tree/FlattenBinaryToLinkedList.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/Tree/FlattenBinaryTreetoLinkedList.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/tree/FlattenBinaryTreetoLinkedList.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/Tree/InOrderTraversal.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/tree/InOrderTraversal.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/Tree/InorderSuccessorBST.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/tree/InorderSuccessorBST.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/Tree/LevelOrderTraversal.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/tree/LevelOrderTraversal.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/Tree/LowestCommonAncestor.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/tree/LowestCommonAncestor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/Tree/LowestCommonAncestorBST.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/tree/LowestCommonAncestorBST.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/Tree/MaximumDepthOfBinaryTree.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/tree/MaximumDepthOfBinaryTree.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/Tree/MinimumDepthOfBinaryTree.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/tree/MinimumDepthOfBinaryTree.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/Tree/MorrisInOrderTraversal.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/tree/MorrisInOrderTraversal.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/Tree/PathSum.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/tree/PathSum.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/Tree/PathSumII.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/tree/PathSumII.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/Tree/PopulateNextRightPointersInEachNodeII.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/tree/PopulateNextRightPointersInEachNodeII.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/Tree/PopulatingNextRightPointersInEachNode.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/tree/PopulatingNextRightPointersInEachNode.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/Tree/PopulatingNextRightPointersInEachNodeII.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/tree/PopulatingNextRightPointersInEachNodeII.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/Tree/PostOrderTraversal.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/tree/PostOrderTraversal.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/Tree/PreOrderTraversal.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/tree/PreOrderTraversal.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/Tree/SameTree.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/tree/SameTree.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/Tree/SerializeAndDeserializeBinaryTree.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/tree/SerializeAndDeserializeBinaryTree.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/Tree/SumRootToLeafNumbers.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/tree/SumRootToLeafNumbers.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/Tree/SymmetricTree.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/tree/SymmetricTree.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/Tree/Trie.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/tree/Trie.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/Tree/UniqueBSTII.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/tree/UniqueBSTII.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/Tree/UniqueBinarySearchTree.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/tree/UniqueBinarySearchTree.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/Tree/ValidateBST.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/tree/ValidateBST.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/Tree/WordDictionary.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/tree/WordDictionary.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/Tree/ZigzagLevelOrder.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/tree/ZigzagLevelOrder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/divideandconquer/FindMaxSubArray.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/divideandconquer/Pow.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/divideandconquer/Sqrt.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/divideandconquer/SquareMatrixMultiply.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/sort/FirstMissingPositive.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/sort/FirstMissingPositive.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/sort/InsertionSortList.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/sort/InsertionSortList.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/sort/MergeKSortedLists.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/sort/MergeKSortedLists.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/sort/MergeSortedArray.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/sort/MergeSortedArray.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/sort/MergeTwoSortedList.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/sort/MergeTwoSortedList.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/sort/QuickSort.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/sort/QuickSort.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALG/src/sort/SortColor.java" beforeDir="false" afterPath="$PROJECT_DIR$/ALG/src/sort/SortColor.java" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -44,12 +133,21 @@
     </SUITE>
   </component>
   <component name="FileEditorManager">
-    <leaf>
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/ALG/src/graph/IsBipartite.java">
+        <entry file="file://$PROJECT_DIR$/ALG/src/linkedList/ReorderList.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="210">
-              <caret line="14" column="39" lean-forward="true" selection-start-line="14" selection-start-column="39" selection-end-line="14" selection-end-column="39" />
+            <state relative-caret-position="60">
+              <caret line="4" selection-start-line="4" selection-end-line="4" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/ALG/src/dfs/WordBreak.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="330">
+              <caret line="25" column="31" selection-start-line="25" selection-start-column="31" selection-end-line="25" selection-end-column="31" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -57,20 +155,32 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/ALG/src/Tree/LowestCommonAncestor.java">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/ALG/src/dfs/DecodeWays.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="360">
-              <caret line="24" column="38" lean-forward="true" selection-start-line="24" selection-start-column="38" selection-end-line="24" selection-end-column="38" />
+            <state relative-caret-position="195">
+              <caret line="13" column="21" selection-start-line="13" selection-start-column="21" selection-end-line="13" selection-end-column="21" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/ALG/src/tree/SerializeAndDeserializeBinaryTree.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="285">
+              <caret line="21" column="46" lean-forward="true" selection-start-line="21" selection-start-column="46" selection-end-line="21" selection-end-column="46" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/ALG/src/Tree/LowestCommonAncestorBST.java">
+        <entry file="file://$PROJECT_DIR$/ALG/src/stack/ExclusiveTimeOfFunctions.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="285">
-              <caret line="19" column="9" lean-forward="true" selection-start-line="19" selection-start-column="9" selection-end-line="19" selection-end-column="9" />
+            <state relative-caret-position="60">
+              <caret line="5" column="13" selection-start-line="5" selection-start-column="13" selection-end-line="5" selection-end-column="13" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -99,12 +209,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/ALG/src/DivideAndConquer/Pow.java" />
-        <option value="$PROJECT_DIR$/ALG/src/DivideAndConquer/Sqrt.java" />
-        <option value="$PROJECT_DIR$/ALG/src/greedy/JumpGame.java" />
-        <option value="$PROJECT_DIR$/ALG/src/greedy/JumpGameII.java" />
-        <option value="$PROJECT_DIR$/ALG/src/greedy/BuySellStockII.java" />
-        <option value="$PROJECT_DIR$/ALG/src/greedy/LongestSubStringWithoutRepeatingCharacters.java" />
         <option value="$PROJECT_DIR$/ALG/src/array/IntersectionOfTwoArrays.java" />
         <option value="$PROJECT_DIR$/ALG/src/graph/CloneGraph.java" />
         <option value="$PROJECT_DIR$/ALG/src/Coding/PalindromeNumber.java" />
@@ -150,36 +254,25 @@
         <option value="$PROJECT_DIR$/ALG/src/graph/IsBipartite.java" />
         <option value="$PROJECT_DIR$/ALG/src/Tree/LowestCommonAncestorBST.java" />
         <option value="$PROJECT_DIR$/ALG/src/Tree/LowestCommonAncestor.java" />
+        <option value="$PROJECT_DIR$/ALG/src/stack/ExclusiveTimeOfFunctions.java" />
+        <option value="$PROJECT_DIR$/ALG/src/implementation/Flatten2DVector.java" />
+        <option value="$PROJECT_DIR$/ALG/src/linkedList/ReorderList.java" />
+        <option value="$PROJECT_DIR$/ALG/src/dfs/WordBreak.java" />
+        <option value="$PROJECT_DIR$/ALG/src/dfs/DecodeWays.java" />
+        <option value="$PROJECT_DIR$/ALG/src/tree/SerializeAndDeserializeBinaryTree.java" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="64" />
-    <option name="y" value="50" />
-    <option name="width" value="1816" />
-    <option name="height" value="1244" />
+    <option name="y" value="1115" />
+    <option name="width" value="1429" />
+    <option name="height" value="1139" />
   </component>
   <component name="ProjectView">
-    <navigator currentView="PackagesPane" proportions="" version="1">
+    <navigator proportions="" version="1">
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="PackagesPane">
-        <subPane>
-          <expand>
-            <path>
-              <item name="ALG-Practice" type="58d84e3e:PackageViewProjectNode" />
-              <item name="ALG-Practice" type="616d4139:PackageViewModuleNode" />
-            </path>
-            <path>
-              <item name="ALG-Practice" type="58d84e3e:PackageViewProjectNode" />
-              <item name="ALG-Practice" type="616d4139:PackageViewModuleNode" />
-              <item name="Tree" type="1f31426a:PackageElementNode" />
-            </path>
-          </expand>
-          <select />
-        </subPane>
-      </pane>
       <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
@@ -204,14 +297,25 @@
               <item name="ALG-Practice" type="462c0819:PsiDirectoryNode" />
               <item name="ALG" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="BitManipulation" type="462c0819:PsiDirectoryNode" />
+              <item name="dfs" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="ALG-Practice" type="b2602c69:ProjectViewProjectNode" />
               <item name="ALG-Practice" type="462c0819:PsiDirectoryNode" />
               <item name="ALG" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="DP" type="462c0819:PsiDirectoryNode" />
+              <item name="tree" type="462c0819:PsiDirectoryNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+      <pane id="PackagesPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="ALG-Practice" type="58d84e3e:PackageViewProjectNode" />
+              <item name="ALG-Practice" type="616d4139:PackageViewModuleNode" />
             </path>
           </expand>
           <select />
@@ -221,7 +325,7 @@
   </component>
   <component name="PropertiesComponent">
     <property name="SearchEverywhereHistoryKey" value="&#9;FILE&#9;file:///Users/huangweidong/IdeaProjects/ALG-Practice/ALG/src/CodingImplementation/MatrixSpiral.java" />
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1552228952159" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1552277523930" />
     <property name="project.structure.last.edited" value="Project" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2" />
@@ -252,12 +356,12 @@
       </method>
     </configuration>
     <configuration name="FindAllAnagrams" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="CodingImplementation.FindAllAnagrams" />
+      <option name="MAIN_CLASS_NAME" value="implementation.FindAllAnagrams" />
       <module name="ALG-Practice" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="CodingImplementation.*" />
+          <option name="PATTERN" value="implementation.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -266,12 +370,12 @@
       </method>
     </configuration>
     <configuration name="FirstMissingPositive" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="Sort.FirstMissingPositive" />
+      <option name="MAIN_CLASS_NAME" value="sort.FirstMissingPositive" />
       <module name="ALG-Practice" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="Sort.*" />
+          <option name="PATTERN" value="sort.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -279,13 +383,13 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="QuickSort (1)" type="Application" factoryName="Application" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="Sort.QuickSort" />
+    <configuration name="QuickSort" type="Application" factoryName="Application" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="sort.QuickSort" />
       <module name="ALG-Practice" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="Sort.*" />
+          <option name="PATTERN" value="sort.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -308,12 +412,12 @@
       </method>
     </configuration>
     <configuration name="Subsets" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="BitManipulation.Subsets" />
+      <option name="MAIN_CLASS_NAME" value="bitmanipulation.Subsets" />
       <module name="ALG-Practice" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="BitManipulation.*" />
+          <option name="PATTERN" value="bitmanipulation.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -322,12 +426,12 @@
       </method>
     </configuration>
     <configuration name="WordLadderII" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="BFS.WordLadderII" />
+      <option name="MAIN_CLASS_NAME" value="bfs.WordLadderII" />
       <module name="ALG-Practice" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="BFS.*" />
+          <option name="PATTERN" value="bfs.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -367,12 +471,12 @@
       </method>
     </configuration>
     <list>
-      <item itemvalue="Application.QuickSort (1)" />
+      <item itemvalue="Application.FindAllAnagrams" />
       <item itemvalue="Application.FirstMissingPositive" />
+      <item itemvalue="Application.QuickSort" />
+      <item itemvalue="Application.SubArraySumEqualsK" />
       <item itemvalue="Application.Subsets" />
       <item itemvalue="Application.WordLadderII" />
-      <item itemvalue="Application.SubArraySumEqualsK" />
-      <item itemvalue="Application.FindAllAnagrams" />
     </list>
     <recent_temporary>
       <list>
@@ -398,10 +502,10 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="64" y="50" width="1816" height="1244" extended-state="0" />
+    <frame x="18" y="854" width="1422" height="1139" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.25197294" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.27391306" />
       <window_info id="Structure" order="1" weight="0.24915445" />
       <window_info id="Image Layers" order="2" />
       <window_info id="Designer" order="3" />
@@ -409,8 +513,8 @@
       <window_info id="Capture Tool" order="5" />
       <window_info id="Favorites" order="6" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
-      <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" visible="true" weight="0.33835253" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.32910156" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.33835253" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -430,72 +534,9 @@
       <window_info anchor="right" id="Coverage" order="8" side_tool="true" weight="0.3297568" />
       <window_info anchor="right" id="Maven" order="9" />
     </layout>
-    <layout-to-restore>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.24320458" />
-      <window_info id="Structure" order="1" weight="0.2496318" />
-      <window_info id="Capture Tool" order="2" />
-      <window_info id="Designer" order="3" />
-      <window_info id="UI Designer" order="4" />
-      <window_info id="Image Layers" order="5" />
-      <window_info id="Favorites" order="6" side_tool="true" />
-      <window_info anchor="bottom" id="Message" order="0" />
-      <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.32947975" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
-      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
-      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
-      <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info anchor="bottom" id="Event Log" order="7" side_tool="true" />
-      <window_info anchor="bottom" id="Messages" order="8" weight="0.32658958" />
-      <window_info anchor="bottom" id="Version Control" order="9" />
-      <window_info anchor="bottom" id="Terminal" order="10" />
-      <window_info anchor="right" id="Commander" order="0" weight="0.4" />
-      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
-      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
-      <window_info anchor="right" id="Palette" order="3" />
-      <window_info anchor="right" id="Maven Projects" order="4" />
-      <window_info anchor="right" id="Palette&#9;" order="5" />
-      <window_info anchor="right" id="Capture Analysis" order="6" />
-      <window_info anchor="right" id="Theme Preview" order="7" />
-    </layout-to-restore>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/ALG/src/array/IntersectionOfTwoArrays.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="585">
-          <caret line="39" column="29" lean-forward="true" selection-start-line="39" selection-start-column="29" selection-end-line="39" selection-end-column="29" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ALG/src/graph/CloneGraph.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1095">
-          <caret line="73" column="29" selection-start-line="73" selection-start-column="29" selection-end-line="73" selection-end-column="29" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ALG/src/math/UglyNumber.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="30">
-          <caret line="2" column="13" selection-start-line="2" selection-start-column="13" selection-end-line="2" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ALG/src/CodingImplementation/PalindromeNumber.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="390">
-          <caret line="26" column="9" selection-start-line="26" selection-start-column="9" selection-end-line="26" selection-end-column="9" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ALG/src/CodingImplementation/Permutation.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="150">
-          <caret line="11" column="13" selection-start-line="11" selection-start-column="13" selection-end-line="11" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ALG/src/CodingImplementation/TwoSum.java">
+    <entry file="file://$PROJECT_DIR$/ALG/src/implementation/TwoSum.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="810">
           <caret line="54" column="38" selection-start-line="54" selection-start-column="38" selection-end-line="54" selection-end-column="38" />
@@ -517,7 +558,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/ALG/src/DFS/RemoveInvalidParenthesis.java">
+    <entry file="file://$PROJECT_DIR$/ALG/src/dfs/RemoveInvalidParenthesis.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="855">
           <caret line="57" column="77" selection-start-line="57" selection-start-column="77" selection-end-line="57" selection-end-column="77" />
@@ -546,14 +587,14 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/ALG/src/CodingImplementation/numberToWords.java">
+    <entry file="file://$PROJECT_DIR$/ALG/src/implementation/numberToWords.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="465">
           <caret line="31" column="43" selection-start-line="31" selection-start-column="43" selection-end-line="31" selection-end-column="43" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/ALG/src/CodingImplementation/LRUCache.java">
+    <entry file="file://$PROJECT_DIR$/ALG/src/implementation/LRUCache.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="540">
           <caret line="38" column="21" selection-start-line="38" selection-start-column="21" selection-end-line="38" selection-end-column="21" />
@@ -589,32 +630,21 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/ALG/src/Tree/PathSum.java">
+    <entry file="file://$PROJECT_DIR$/ALG/src/tree/PathSum.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="30">
           <caret line="2" column="13" selection-start-line="2" selection-start-column="13" selection-end-line="2" selection-end-column="13" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/ALG/src/Tree/SerializeAndDeserializeBinaryTree.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="491">
-          <caret line="34" lean-forward="true" selection-start-line="14" selection-end-line="55" selection-end-column="5" />
-          <folding>
-            <element signature="e#178#179#0" expanded="true" />
-            <element signature="e#204#205#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ALG/src/DFS/TargetSum.java">
+    <entry file="file://$PROJECT_DIR$/ALG/src/dfs/TargetSum.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="780">
           <caret line="52" lean-forward="true" selection-start-line="52" selection-end-line="52" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/ALG/src/DFS/ExpressionAddOperators.java">
+    <entry file="file://$PROJECT_DIR$/ALG/src/dfs/ExpressionAddOperators.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="30">
           <caret line="2" column="37" lean-forward="true" selection-start-line="2" selection-start-column="37" selection-end-line="2" selection-end-column="37" />
@@ -635,21 +665,21 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/ALG/src/Tree/DiameterOfBinaryTree.java">
+    <entry file="file://$PROJECT_DIR$/ALG/src/tree/DiameterOfBinaryTree.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="420">
           <caret line="28" selection-start-line="28" selection-end-line="28" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/ALG/src/CodingImplementation/InsertIntervals.java">
+    <entry file="file://$PROJECT_DIR$/ALG/src/implementation/InsertIntervals.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="45">
           <caret line="4" selection-start-line="4" selection-end-line="4" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/ALG/src/Tree/Trie.java">
+    <entry file="file://$PROJECT_DIR$/ALG/src/tree/Trie.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="90">
           <caret line="7" column="1" selection-start-line="7" selection-start-column="1" selection-end-line="87" selection-end-column="5" />
@@ -677,7 +707,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/ALG/src/Tree/WordDictionary.java">
+    <entry file="file://$PROJECT_DIR$/ALG/src/tree/WordDictionary.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="930">
           <caret line="67" column="5" lean-forward="true" selection-start-line="67" selection-start-column="5" selection-end-line="67" selection-end-column="5" />
@@ -691,14 +721,14 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/ALG/src/CodingImplementation/AddTwoNumbers.java">
+    <entry file="file://$PROJECT_DIR$/ALG/src/implementation/AddTwoNumbers.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="825">
           <caret line="55" column="9" selection-start-line="55" selection-start-column="9" selection-end-line="55" selection-end-column="9" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/ALG/src/CodingImplementation/AddStrings.java">
+    <entry file="file://$PROJECT_DIR$/ALG/src/implementation/AddStrings.java">
       <provider selected="true" editor-type-id="text-editor">
         <state>
           <caret column="29" lean-forward="true" selection-start-column="29" selection-end-column="29" />
@@ -719,7 +749,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/ALG/src/Tree/ConvertBSTtoSortedDoublyLinkedList.java">
+    <entry file="file://$PROJECT_DIR$/ALG/src/tree/ConvertBSTtoSortedDoublyLinkedList.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="825">
           <caret line="55" column="24" lean-forward="true" selection-start-line="55" selection-start-column="24" selection-end-line="55" selection-end-column="24" />
@@ -729,14 +759,14 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/ALG/src/Tree/BinaryTreeVerticalOrderTraversal.java">
+    <entry file="file://$PROJECT_DIR$/ALG/src/tree/BinaryTreeVerticalOrderTraversal.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="105">
           <caret line="7" column="8" selection-start-line="6" selection-end-line="57" selection-end-column="5" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/ALG/src/Tree/BSTIterator.java">
+    <entry file="file://$PROJECT_DIR$/ALG/src/tree/BSTIterator.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="135">
           <caret line="9" column="8" selection-start-line="7" selection-end-line="42" selection-end-column="5" />
@@ -748,14 +778,14 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/ALG/src/Tree/InorderSuccessorBST.java">
+    <entry file="file://$PROJECT_DIR$/ALG/src/tree/InorderSuccessorBST.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="300">
           <caret line="20" column="13" lean-forward="true" selection-start-line="20" selection-start-column="13" selection-end-line="20" selection-end-column="13" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/ALG/src/CodingImplementation/Reader4.java">
+    <entry file="file://$PROJECT_DIR$/ALG/src/implementation/Reader4.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="330">
           <caret line="22" column="13" lean-forward="true" selection-start-line="21" selection-end-line="24" selection-end-column="13" />
@@ -766,7 +796,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/ALG/src/CodingImplementation/MatrixSpiral.java">
+    <entry file="file://$PROJECT_DIR$/ALG/src/implementation/MatrixSpiral.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="780">
           <caret line="52" selection-start-line="52" selection-end-line="52" />
@@ -776,7 +806,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/ALG/src/BitManipulation/Subsets.java">
+    <entry file="file://$PROJECT_DIR$/ALG/src/bitmanipulation/Subsets.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="60">
           <caret line="5" column="13" selection-start-line="5" selection-start-column="13" selection-end-line="5" selection-end-column="13" />
@@ -794,7 +824,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/ALG/src/CodingImplementation/FindAllAnagrams.java">
+    <entry file="file://$PROJECT_DIR$/ALG/src/implementation/FindAllAnagrams.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-65">
           <caret line="23" column="31" selection-start-line="23" selection-start-column="31" selection-end-line="23" selection-end-column="31" />
@@ -804,14 +834,14 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/ALG/src/CodingImplementation/AddBinary.java">
+    <entry file="file://$PROJECT_DIR$/ALG/src/implementation/AddBinary.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="285">
           <caret line="19" selection-start-line="16" selection-end-line="40" selection-end-column="5" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/ALG/src/CodingImplementation/MergeInternals.java">
+    <entry file="file://$PROJECT_DIR$/ALG/src/implementation/MergeInternals.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="210">
           <caret line="14" column="5" lean-forward="true" selection-start-line="14" selection-start-column="5" selection-end-line="14" selection-end-column="5" />
@@ -822,7 +852,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/ALG/src/CodingImplementation/VerifyingAnAlienDictionary.java">
+    <entry file="file://$PROJECT_DIR$/ALG/src/implementation/VerifyingAnAlienDictionary.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="435">
           <caret line="29" column="62" selection-start-line="29" selection-start-column="62" selection-end-line="29" selection-end-column="62" />
@@ -839,17 +869,65 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/ALG/src/Tree/LowestCommonAncestorBST.java">
+    <entry file="file://$PROJECT_DIR$/ALG/src/tree/LowestCommonAncestorBST.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="285">
           <caret line="19" column="9" lean-forward="true" selection-start-line="19" selection-start-column="9" selection-end-line="19" selection-end-column="9" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/ALG/src/Tree/LowestCommonAncestor.java">
+    <entry file="file://$PROJECT_DIR$/ALG/src/tree/LowestCommonAncestor.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="360">
           <caret line="24" column="38" lean-forward="true" selection-start-line="24" selection-start-column="38" selection-end-line="24" selection-end-column="38" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ALG/src/implementation/Flatten2DVector.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="60">
+          <caret line="4" column="14" lean-forward="true" selection-start-line="4" selection-start-column="14" selection-end-line="4" selection-end-column="14" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ALG/src/linkedList/ReorderList.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="60">
+          <caret line="4" selection-start-line="4" selection-end-line="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ALG/src/dfs/WordBreak.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="330">
+          <caret line="25" column="31" selection-start-line="25" selection-start-column="31" selection-end-line="25" selection-end-column="31" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ALG/src/dfs/DecodeWays.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="195">
+          <caret line="13" column="21" selection-start-line="13" selection-start-column="21" selection-end-line="13" selection-end-column="21" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ALG/src/stack/ExclusiveTimeOfFunctions.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="60">
+          <caret line="5" column="13" selection-start-line="5" selection-start-column="13" selection-end-line="5" selection-end-column="13" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ALG/src/tree/SerializeAndDeserializeBinaryTree.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="285">
+          <caret line="21" column="46" lean-forward="true" selection-start-line="21" selection-start-column="46" selection-end-line="21" selection-end-column="46" />
         </state>
       </provider>
     </entry>

@@ -1,4 +1,4 @@
-package Sort;
+package sort;
 
 import datastructure.ListNode;
 
