@@ -11,7 +11,7 @@ public class DecodeWays {
 
     private int DFS(String s)
     {
-        if(s.length())
+
         if(s.charAt(0)=='0')
             return 0;
 
