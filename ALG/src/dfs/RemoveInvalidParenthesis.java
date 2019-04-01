@@ -1,7 +1,6 @@
 package dfs;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class RemoveInvalidParenthesis {
 
@@ -9,29 +8,64 @@ public class RemoveInvalidParenthesis {
 
         List<String> result = new LinkedList<String>();
 
-        int leftP=0,rightP=0;
+        int leftP = 0, rightP = 0;
 
-        for(int i=0;i<s.length();i++)
-        {
-            if(s.charAt(i)=='(')
-            {
+        for (int i = 0; i < s.length(); i++) {
+            if (s.charAt(i) == '(') {
                 leftP++;
             }
 
-            if(s.charAt(i)==')')
-            {
-                if(leftP==0)
-                {
+            if (s.charAt(i) == ')') {
+                if (leftP == 0) {
                     rightP++;
-                }
-                else
-                {
+                } else {
                     leftP--;
                 }
             }
         }
 
-        DFS(0,s,leftP,rightP,result);
+        DFS(0, s, leftP, rightP, result);
+        return result;
+    }
+
+
+    public List<String> BFS(String s)
+    {
+        List<String> result = new ArrayList<>();
+        Set<String> visited = new HashSet<>();
+
+        Queue<String> queue = new LinkedList<>();
+
+        boolean isFound = false;
+
+        queue.offer(s);
+
+        while(!queue.isEmpty() && !isFound)
+        {
+            int size = queue.size();
+
+            for(int i=0;i<size;i++)
+            {
+                String str = queue.poll();
+
+                if(isValid(str))
+                {
+                    result.add(str);
+                }
+
+                for(int j=0;j<str.length();j++)
+                {
+                    if(str.charAt(j)!='(' && str.charAt(j)!=')')
+                        continue;
+                    String t=str.substring(0,j).concat(str.substring(j+1));
+
+                    if(!visited.contains(t)) {
+                        queue.add(t);
+                        visited.add(t);
+                    }
+                }
+            }
+        }
         return result;
     }
 

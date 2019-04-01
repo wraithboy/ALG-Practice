@@ -18,6 +18,39 @@ public class ConvertBSTtoSortedDoublyLinkedList {
         }
     }
 
+    Node prev;
+
+    Node first;
+
+    public Node treeToDoublyList1(Node root) {
+
+        DFS(root);
+        prev.right=first;
+        first.left=prev;
+        return root;
+
+    }
+
+    private void DFS(Node node) {
+        if (node != null) {
+            DFS(node.left);
+
+            if(prev!=null)
+            {
+                prev.right=node;
+                node.left=prev;
+            }
+            else
+            {
+                first=node;
+            }
+
+            prev=node;
+
+            DFS(node.right);
+        }
+    }
+
     public Node treeToDoublyList(Node root) {
 
         if(root==null)
@@ -25,11 +58,11 @@ public class ConvertBSTtoSortedDoublyLinkedList {
 
         Stack<Node> stack = new Stack<>();
 
-        Node head=null;
-        Node prev=null;
+        Node prev=null,first=null;
 
-        while(root!=null || !stack.empty())
+        while(root!=null || !stack.isEmpty())
         {
+
             while(root!=null)
             {
                 stack.push(root);
@@ -38,22 +71,27 @@ public class ConvertBSTtoSortedDoublyLinkedList {
 
             root=stack.pop();
 
-            if(head==null)
-            head=root;
+            if(first==null)
+            {
+                first=root;
+            }
 
             if(prev!=null)
             {
-                root.left=prev;
                 prev.right=root;
+                root.left=prev;
             }
 
             prev=root;
+
             root=root.right;
         }
 
-        head.left=prev;
-        prev.right=head;
 
-        return head;
+        prev.right=first;
+        first.left=prev;
+
+        return first;
+
     }
 }

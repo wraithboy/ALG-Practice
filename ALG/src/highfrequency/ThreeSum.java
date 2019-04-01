@@ -5,59 +5,51 @@ import java.util.Arrays;
 import java.util.List;
 
 public class ThreeSum {
-	
-    public List<List<Integer>> threeSum(int[] numbers) {
-        // write your code here
-        
-        if(numbers==null || numbers.length<3)
-        {
-            return null;
-        }
+
+    public List<List<Integer>> threeSum(int[] nums) {
 
         List<List<Integer>> result = new ArrayList<List<Integer>>();
 
-        Arrays.sort(numbers);
-        int left,right;
-        int sum;
+        if (nums == null || nums.length < 3) {
+            return result;
+        }
 
-        for(int i=0;i<numbers.length-2;i++)
-        {
+        Arrays.sort(nums);
 
-            if(i>0 && numbers[i]==numbers[i-1])
+        for (int i = 0; i < nums.length - 2; i++) {
+            if (i != 0 && nums[i] == nums[i - 1])
                 continue;
 
-            left=i+1;
-            right=numbers.length-1;
+            int remain = -nums[i];
 
-            while(left<right)
-            {
-                sum=numbers[i]+numbers[left]+numbers[right];
-                if(sum==0)
-                {
-                    ArrayList<Integer> tmp=new ArrayList<>();
-                    tmp.add(numbers[i]);
-                    tmp.add(numbers[left]);
-                    tmp.add(numbers[right]);
-                    result.add(tmp);
-                    left++;
-                    right--;
+            int j = i + 1;
+            int k = nums.length - 1;
 
-                    while(left<right && numbers[right]==numbers[right+1])
-                        right--;
-                    while(left<right && numbers[left]==numbers[left-1])
-                        left++;
-                }
-                else if (sum>0)
-                {
-                    right--;
-                }
-                else
-                {
-                    left++;
+            while (j < k) {
+
+                if (nums[j] + nums[k] > remain) {
+                    k--;
+                } else if (nums[j] + nums[k] < remain) {
+                    j++;
+                } else {
+                    ArrayList<Integer> list = new ArrayList<>();
+                    list.add(nums[i]);
+                    list.add(nums[j]);
+                    list.add(nums[k]);
+                    result.add(list);
+                    j++;
+                    k--;
+                    while (j < k && nums[j] == nums[j - 1]) {
+                        j++;
+                    }
+                    while (j < k && nums[k] == nums[k + 1]) {
+                        k--;
+                    }
                 }
             }
         }
 
         return result;
     }
+
 }

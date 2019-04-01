@@ -1,6 +1,10 @@
 package tree;
 
+import java.util.LinkedList;
+
 public class SerializeAndDeserializeBinaryTree {
+
+    private final String delimiter="|";
 
     class TreeNode {
         int val;
@@ -11,47 +15,54 @@ public class SerializeAndDeserializeBinaryTree {
         }
     }
 
-    // Encodes a tree to a single string.
     public String serialize(TreeNode root) {
-        StringBuilder sb = new StringBuilder();
+
+        StringBuilder sb =new StringBuilder();
+
         serializeHelper(root,sb);
+
         return sb.toString();
     }
 
+    private void serializeHelper(TreeNode root, StringBuilder sb)
+    {
+        if(root==null)
+        {
+            sb.append("#").append(delimiter);
+            return;
+        }
+
+        sb.append(root.val).append(delimiter);
+        serializeHelper(root.left,sb);
+        serializeHelper(root.right,sb);
+    }
+
+
     // Decodes your encoded data to tree.
     public TreeNode deserialize(String data) {
-        int[] index = new int[1];
-        index[0] = 0;
-        return deserializeHelper(data.split(","),index);
-    }
 
-    public TreeNode deserializeHelper(String[] strings,int[] index)
-    {
-        if(index[0]>=strings.length)
-            return null;
-        TreeNode node = null;
-        String s= strings[index[0]];
-        index[0]++;
+        LinkedList<String> list = new LinkedList<String>();
 
-        if(!s.equals("#"))
+        for(String s: data.split(delimiter))
         {
-            node = new TreeNode(Integer.valueOf(s));
-            node.left=deserializeHelper(strings,index);
-            node.right=deserializeHelper(strings,index);
+            list.add(s);
         }
 
-        return node;
+        return deserializeHelper(list);
     }
 
-    public void serializeHelper(TreeNode root,StringBuilder sb)
+    private TreeNode deserializeHelper(LinkedList<String> list)
     {
+        String c = list.removeFirst();
 
-        if(root==null)
-            sb.append("#").append(",");
-        else {
-            sb.append(root.val).append(",");
-            serializeHelper(root.left, sb);
-            serializeHelper(root.right, sb);
+        if(c.equals("#"))
+        {
+            return null;
         }
+
+        TreeNode n = new TreeNode(Integer.valueOf(c));
+        n.left=deserializeHelper(list);
+        n.right=deserializeHelper(list);
+        return n;
     }
 }

@@ -2,12 +2,13 @@ package array;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 public class SubArraySum {
 	public static void main(String args[])
 	{
-		
+		HashSet<String> a =new HashSet<>();
 	}
 	
 	
