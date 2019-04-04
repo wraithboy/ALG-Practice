@@ -4,6 +4,52 @@ import java.util.Arrays;
 
 public class NextPermutation {
 
+    public void nextPermutation1(int[] nums) {
+
+        /*
+        下一个字典序数的找法：
+        找到第一个nums[i]<nums[i+1]的位置，i是需要改动的地方;
+        然后把i+1到尾部的数reverse.(这些数必然是逆序的)
+        从i+1开始找到第一个大于nums[i]的数，交换两数的位置.
+        */
+
+        int i=nums.length-2;
+
+        while(i>=0&&nums[i]>=nums[i+1])
+        {
+            i--;
+        }
+
+        int j=i+1;
+        int k=nums.length-1;
+
+        while(j<k)
+        {
+            swap(nums,j,k);
+            j++;
+            k--;
+        }
+
+        if(i==-1)
+        {
+            return;
+        }
+
+        for(j=i+1;j<nums.length;j++)
+        {
+            if(nums[i]<nums[j])
+            {
+                swap(nums,i,j);
+                break;
+            }
+        }
+
+    }
+
+
+
+
+
     public void nextPermutation(int[] nums) {
 
         if(nums==null || nums.length==0 || nums.length==1)
