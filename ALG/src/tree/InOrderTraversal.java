@@ -20,12 +20,10 @@ public class InOrderTraversal {
     			stack.push(curr);
     			curr=curr.left;
     		}
-    		else
-    		{
-    			TreeNode t= stack.pop();
-    			result.add(t.val);
-    			curr=t.right;
-    		}
+
+			curr = stack.pop();
+			result.add(curr.val);
+			curr=curr.right;
     	}
     	
     	return result;

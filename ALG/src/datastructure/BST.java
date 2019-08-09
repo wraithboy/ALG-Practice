@@ -106,28 +106,33 @@ public class BST <Key extends Comparable<Key>, Value>{
 			 else 
 				 return t;
 	 }
-	 
-	 public Key ceiling(Node<Key,Value> root,Key key)
+
+	 public Key ceiling(Node<Key,Value> root, Key key)
 	 {
-		 if(root==null)
-			 return null;
-		 
-		 int cmp=root.getKey().compareTo(key);
-		 
-		 if(cmp==0) return key;
-		 
-		 if(cmp<0)
-		 {
-			 return ceiling(root.getRight(),key);
-		 }
-		 
-		 Key t=ceiling(root.getLeft(),key);
-		 
-		 if(t==null)
-			 return root.getKey();
-		 else
-			 return t;
+	 	if(root==null)
+	 		return null;
+
+	 	int cmp = root.getKey().compareTo(key);
+
+	 	if(cmp==0) return key;
+
+	 	if(cmp<0)
+		{
+			return ceiling(root.getRight(),key);
+		}
+
+	 	Key t = ceiling(root.getLeft(),key);
+
+	 	if(t==null)
+		{
+			return root.getKey();
+		}
+	 	else
+		{
+			return t;
+		}
 	 }
+
 	 
 	 public BST (Node<Key,Value> root)
 	 {
@@ -350,33 +355,31 @@ public class BST <Key extends Comparable<Key>, Value>{
 //		 }
 //		 
 //	 }
-	 
+
 	 public Value get(Key key)
 	 {
-		 
-		 Node<Key,Value> t=root;
-		 
-		 while(t!=null)
-		 {
-			 
-			 int cmp=t.getKey().compareTo(key);
-			 
-			 if(cmp==0)
-			 {
-				 return t.getValue();
-			 }
-			 else if(cmp>0)
-			 {
-				  t=t.getLeft();
-			 }
-			 else
-			 {
-				 t=t.getRight();
-			 }
-		 }
-		 
-		 return null;
+	 	Node<Key,Value> cur = root;
+
+	 	while(cur!=null)
+		{
+			int cmp = cur.getKey().compareTo(key);
+
+			if(cmp==0)
+			{
+				return cur.getValue();
+			}
+			else if(cmp>0)
+			{
+				cur=cur.getRight();
+			}
+			else{
+				cur=cur.getLeft();
+			}
+		}
+
+	 	return null;
 	 }
+
 	 
 	 public void delete(Key key)
 	 {

@@ -6,10 +6,10 @@ public class QuickSort {
 	
 	public static void main(String args[])
 	{
-		//int[] array={5,3,7,2,20,342,23,999,49,6};
+		int[] array={5,3,7,2,20,342,23,999,49,6};
 		//int[] array={5,3,7,2,99,23};
-		int[] array={1,2};
-		Qsort(array,0,array.length-1);
+		//int[] array={1,2};
+		qsort(array,0,array.length-1);
 		
 		for (int i : array)
 		{
@@ -17,73 +17,47 @@ public class QuickSort {
 		}
 		
 	}
-	
-	public static void Qsort(int[] array,int low ,int high)
-	{	
-		
 
-		
-		if(low>=high)
-			return;
-		
-		for (int i : array)
+
+	public static int partition(int[] arr,int start,int end)
+	{
+		int pivot = arr[end];
+
+		int left=start;
+
+		for(int i=start;i<end;i++)
 		{
-			System.out.print(i+",");
+			if(arr[i]<pivot)
+			{
+				swap(arr,i,left);
+				left++;
+			}
 		}
-		System.out.print("||");
-		
-		
-		int j=Partition(array,low,high);
-		
-		System.out.println(j);
-		
-		Qsort(array,low,j-1);
-		
-		Qsort(array,j +1,high);
-		
+
+		swap(arr,left,end);
+
+		return left;
+	}
+
+	public static void swap(int[] arr, int i,int j)
+	{
+		int tmp=arr[i];
+
+		arr[i]=arr[j];
+		arr[j]=tmp;
+	}
+
+	public static void qsort(int[] array,int low ,int high)
+	{	
+			if(low>=high)
+				return;
+
+			int i = partition(array,low,high);
+
+			qsort(array,low,i-1);
+			qsort(array,i+1,high);
 	}
 	
-	public static int Partition(int[] array,int low, int high)
-	{	
-		
-		System.out.println("High:"+high+" Low:"+low);
-		
-		int pivot=array[low];
-		
-		int i=low+1;
-		int j=high;
-		
-		while(true)
-		{
-		
-			while(array[i]>pivot)
-			{
-				if(i==high)
-					break;
-				i++;
-			}
-			
-			while(array[j]<pivot)
-			{
-				if(j==low)
-					break;
-				j--;
-			}
-			
-			if(i>=j) break;
-			
-			int tmp=array[i];
-			array[i]=array[j];
-			array[j]=tmp;
-		}
-		
-		int tmp=array[low];
-		
-		array[low]=array[j];
-		
-		array[j]=tmp;
-		
-		return j;
-	}
+
 
 }
