@@ -8,7 +8,6 @@ public class ClimbStair {
 		
 		
 		long start_time = System.currentTimeMillis();
-		System.out.println(cs.climbStairs(44));
 		long end_time = System.currentTimeMillis();
 		System.out.println(cs.climbStairsIterative(44));
 		long end_time2 = System.currentTimeMillis();
@@ -17,19 +16,37 @@ public class ClimbStair {
 		
 		System.out.println("Time difference for iterative:"+(end_time2-end_time));
 
+		ClimbStair climbStair = new ClimbStair();
+
+		System.out.println(climbStair.climbStairs2(5));
+
 	}
 	
-    public int climbStairs(int n) {
-        if(n==0)
-        return 1;
-        else if(n==1)
-        return 1;
-        else
-        {
-            return climbStairs(n-1)+climbStairs(n-2);
-        }
+    public int climbStairs2(int n) {
+
+		if(n<=0) return 0;
+		if(n==1) return 1;
+		if(n==2) return 2;
+		if(n==3) return 4;
+
+
+
+		int lastOneStep=4;
+		int lastTwoStep=2;
+		int lastThreeSteps=1;
+		int count=0;
+
+		for(int i=4;i<=n;i++)
+		{
+			count=lastOneStep+lastTwoStep+lastThreeSteps;
+			lastThreeSteps=lastTwoStep;
+			lastTwoStep=lastOneStep;
+			lastOneStep=count;
+		}
+
+		return count;
     }
-	
+
 	public int climbStairsIterative(int n)
 	{
 		int result=0;

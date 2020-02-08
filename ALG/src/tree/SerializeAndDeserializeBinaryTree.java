@@ -1,6 +1,7 @@
 package tree;
 
 import java.util.LinkedList;
+import java.util.Stack;
 
 public class SerializeAndDeserializeBinaryTree {
 
@@ -13,6 +14,42 @@ public class SerializeAndDeserializeBinaryTree {
         TreeNode(int x) {
             val=x;
         }
+    }
+
+    public String serialize1(TreeNode root) {
+
+        if(root==null)
+        {
+            return "#";
+        }
+
+        StringBuilder sb = new StringBuilder();
+
+        Stack<TreeNode> stack = new Stack<>();
+
+        stack.push(root);
+
+        while(!stack.isEmpty())
+        {
+            TreeNode n = stack.pop();
+
+            if(n==null)
+            {
+                sb.append("#").append(",");
+            }
+            else
+            {
+                sb.append(n.val);
+
+                if(n.right!=null)
+                    stack.push(n.right);
+
+                if(n.left!=null)
+                    stack.push(n.left);
+            }
+        }
+
+        return sb.toString();
     }
 
     public String serialize(TreeNode root) {

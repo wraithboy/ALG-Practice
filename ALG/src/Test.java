@@ -1,15 +1,22 @@
+import java.net.HttpURLConnection;
+import java.net.URL;
+
 public class Test {
+    private final Character value='a';
 
-    public static void main(String args[])
-    {
-        String s = "Abcd";
-        String b = s.substring(0,0);
-        System.out.println(b.length());
-        b=s.substring(4);
-        System.out.println(b.length());
-        System.out.println(s.substring(0,0));
+    public String toString(){
+        return ""+value;
+    }
 
+    public static void main(String args[]){
 
+        try{
+
+            HttpURLConnection connection = (HttpURLConnection) new URL("").openConnection();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }

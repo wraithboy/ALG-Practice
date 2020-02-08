@@ -64,6 +64,9 @@ package bfs;
         n*n, k items, m guards
 */
 
+import java.util.LinkedList;
+import java.util.Queue;
+
 class Position{
     int x;
     int y;
@@ -79,9 +82,6 @@ class Position{
 
 public class bytedance {
 
-
-
-    public class Main {
         public static void main(String[] args) {
             System.out.println("Hello World!");
 
@@ -112,7 +112,7 @@ public class bytedance {
 
                         visited[i][j]=true;
 
-                        queue.add(new Position(x,y,0));
+                        queue.add(new Position(i,j,0));
 
                         while(!queue.isEmpty())
                         {
@@ -143,14 +143,14 @@ public class bytedance {
 
                             //move left
 
-                            if(p.y-1>=0 && && matrix[p.x][p.y-1]=='0' && visited[p.x][p.y-1]!=true)
+                            if(p.y-1>=0 && matrix[p.x][p.y-1]=='0' && visited[p.x][p.y-1]!=true)
                             {
                                 visited[p.x][p.y-1]=true;
                                 queue.add(new Position(p.x,p.y-1,p.distance+1));
                             }
 
                             //move right
-                            if(p.y+1<matrix[0].length && && matrix[p.x][p.y+1]=='0' && visited[p.x][p.y+1]!=true)
+                            if(p.y+1<matrix[0].length && matrix[p.x][p.y+1]=='0' && visited[p.x][p.y+1]!=true)
                             {
                                 visited[p.x][p.y+1]=true;
                                 queue.add(new Position(p.x,p.y+1,p.distance+1));
@@ -167,5 +167,3 @@ public class bytedance {
 
         }
     }
-
-}
